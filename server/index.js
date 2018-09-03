@@ -13,7 +13,7 @@ const bot = new TelegramBot(process.env.TOKEN, { polling: true });
 let isConnectDB = true;
 
 mongoose.connect(
-  `mongodb://${process.env.USER}:${process.env.SECRET}@ds119572.mlab.com:19572/depts_bot`,
+  `mongodb://${process.env.USER}:${process.env.SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
   { useNewUrlParser: true },
   (err) => {
     if (err) isConnectDB = false
@@ -21,14 +21,12 @@ mongoose.connect(
 );
 
 app.get('/', function (req, res) {
-  res.send('Hello World!');
+  res.send('This is telegram bot');
 });
 
 app.listen(process.env.PORT || 8080, function () {
   console.log('Example app listening on port 3000!');
 });
-
-
 
 
 bot.onText(/\/start/, (msg) => {
@@ -39,7 +37,7 @@ bot.onText(/\/start/, (msg) => {
   bot.sendMessage(chat, 'Будет вывод долгов каждое 11е число');
 
   schedule.scheduleJob({ date: 11 }, () => {
-    bot.sendMessage(chat, 'тут будет вывод долгов каждое 11е число'); //TODO сделать вывод
+    bot.sendMessage(chat, 'тут будет вывод долгов каждое 11е число');
   });
 });
 
