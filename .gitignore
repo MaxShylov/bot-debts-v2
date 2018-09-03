@@ -1,0 +1,8 @@
+*~
+.DS_Store
+
+.idea
+.env
+package-lock.json
+yarn.lock
+/node_modules
