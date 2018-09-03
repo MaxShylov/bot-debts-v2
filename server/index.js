@@ -1,3 +1,6 @@
+const express = require('express');
+const app = express();
+
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
 const schedule = require('node-schedule');
@@ -16,6 +19,15 @@ mongoose.connect(
     if (err) isConnectDB = false
   }
 );
+
+app.get('/', function (req, res) {
+  res.send('Hello World!');
+});
+
+app.listen(3000, function () {
+  console.log('Example app listening on port 3000!');
+});
+
 
 
 
