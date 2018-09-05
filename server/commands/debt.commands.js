@@ -271,7 +271,7 @@ module.exports = (bot) => {
     let str = '_____________ Debts _____________';
 
     debts.map(i => {
-      if (i.debts && Object.keys(i.debts).length && !!findKey(i.debts, (v) => v > 0)) {
+      if (i.debts && Object.keys(i.debts).length && !!findKey(i.debts, (v) => v)) {
         str += '\n' + i.name + ': ' + i.total + '\n';
 
         Object.keys(i.debts).map(j => {
