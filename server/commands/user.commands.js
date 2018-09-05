@@ -51,9 +51,11 @@ module.exports = (bot) => {
 
     if (isEmpty(users)) return bot.sendMessage(chat, 'Пользователи еще не созданы.');
 
-    users = users.map(i => i.name).join(', ');
+    let textUsers = 'Пользователи: \n';
 
-    bot.sendMessage(chat, `Пользователи: ${users}`);
+    users.map(i => textUsers += `${i.name} - @${i.login}\n`);
+
+    bot.sendMessage(chat, textUsers);
   });
 
   bot.onText(/\/remove_user/, async (msg, match) => {

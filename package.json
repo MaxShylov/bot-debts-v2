@@ -13,7 +13,10 @@
     "node-telegram-bot-api": "^0.30.0"
   },
   "scripts": {
-    "start": "nodemon server/index.js",
+    "start": "nodemon node_modules/.bin/nodenv server/index.js",
     "dev": "node server/index.js"
+  },
+  "devDependencies": {
+    "node-env-run": "^3.0.2"
   }
 }

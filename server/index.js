@@ -6,14 +6,14 @@ const mongoose = require('mongoose');
 const schedule = require('node-schedule');
 const userCommands = require('./commands/user.commands.js');
 const debtCommands = require('./commands/debt.commands.js');
-// const dotenv = require('dotenv').config().parsed;
+// require('dotenv').config();
 
 const bot = new TelegramBot(process.env.TOKEN, { polling: true });
 
 let isConnectDB = true;
 
 mongoose.connect(
-  `mongodb://${process.env.USER}:${process.env.SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
+  `mongodb://${process.env.DB_USER}:${process.env.DB_SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
   { useNewUrlParser: true },
   (err) => {
     if (err) isConnectDB = false

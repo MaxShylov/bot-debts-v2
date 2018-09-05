@@ -2,6 +2,7 @@ const escapeRegExp = require('lodash').escapeRegExp;
 const isNaN = require('lodash').isNaN;
 const isEmpty = require('lodash').isEmpty;
 const findKey = require('lodash').findKey;
+const isInteger = require('lodash').isInteger;
 
 const DebtsModel = require('../models/debts.model');
 
@@ -37,7 +38,7 @@ module.exports = (bot) => {
     to = null,
     sum = null,
     isRepay = false;
-  reminder = null; //TODO сделать напоминание через 15 сек после ввода долгов
+  // reminder = null; //TODO сделать напоминание через 15 сек после ввода долгов
 
   const clear = () => {
     from = null;
@@ -46,6 +47,8 @@ module.exports = (bot) => {
     isRepay = false;
   };
 
+
+  // ADD DEBT
   bot.onText(/\/add_debt/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
@@ -73,6 +76,7 @@ module.exports = (bot) => {
   });
 
 
+  // REPAY DEBT
   bot.onText(/\/repay_debt/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
@@ -102,6 +106,8 @@ module.exports = (bot) => {
     bot.sendMessage(chat, text, options);
   });
 
+
+  // CALLBACK QUERY
   bot.on('callback_query', async (msg) => {
     const chat = msg.hasOwnProperty('chat')
       ? msg.chat.id
@@ -209,6 +215,8 @@ module.exports = (bot) => {
     }
   });
 
+
+  // SUM
   bot.onText(/\/sum (.+)/, (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
@@ -243,6 +251,8 @@ module.exports = (bot) => {
     if (sum) bot.sendMessage(chat, text, options);
   });
 
+
+  // CANCEL
   bot.onText(/\/cancel/, (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
@@ -252,6 +262,7 @@ module.exports = (bot) => {
   });
 
 
+  // GET DEBTS
   bot.onText(/\/get_debts/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
@@ -278,4 +289,63 @@ module.exports = (bot) => {
     bot.sendMessage(chat, str).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 15000));
 
   });
+
+
+  // ADD
+  bot.onText(/\/add (.+)/, async (msg, match) => await shortEntry('add', msg, match));
+  bot.onText(/\/del (.+)/, async (msg, match) => await shortEntry('del', msg, match));
+
+
+  const shortEntry = async (type, msg, match) => {
+    const
+      chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
+      userI = ['@i', '@I', '@me', 'Me', '@ME'],
+      fixUser = (login) => userI.includes(login) ? '@' + msg.from.username : login,
+      m = match[1].split(' '),
+      isAdd = type === 'add';
+
+    let
+      from = fixUser(m[0]),
+      to = fixUser(m[1]),
+      sum = +m[2],
+      errorText = '';
+
+    if (!from || !to || !sum) errorText = 'Команда введена неверно!';
+    if (!from.includes('@') || !to.includes('@')) errorText = 'ЛОГИН должен содержать симлов "@"!';
+    if (!isInteger(sum)) errorText = 'Ведите коректную сумму!';
+    if (errorText) return bot.sendMessage(chat, errorText);
+
+    from = from.slice(1);
+    to = to.slice(1);
+    sum = +[isAdd ? sum : -sum];
+
+    const
+      isFrom = await DebtsModel.find({ login: from, chatId: chat }).lean().exec(),
+      isTo = await DebtsModel.find({ login: to, chatId: chat }).lean().exec();
+
+    if (isEmpty(isFrom)) return bot.sendMessage(chat, `@${from} в базе не найден!`);
+    if (isEmpty(isTo)) return bot.sendMessage(chat, `@${to} в базе не найден!`);
+
+    const
+      query = { login: from, chatId: chat },
+      debt = await DebtsModel.findOne({ login: from, chatId: chat }).lean().exec(),
+      newDebt = {
+        ...debt,
+        total: +debt.total + sum,
+        debts: {
+          ...debt.debts,
+          [to]: debt.debts && debt.debts[to] ? +debt.debts[to] + sum : sum
+        }
+      };
+
+    DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, (err) => {
+      const text = err
+        ? 'Error: Данные не записались в базу'
+        : `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
+
+      bot.sendMessage(chat, text);
+      clear();
+    });
+  }
+
 };
