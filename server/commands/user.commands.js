@@ -47,7 +47,7 @@ module.exports = (bot) => {
   bot.onText(/\/list_users/, async (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
-    let users = await DebtsModel.find({ chatId: chat }).lean().exec();
+    let users = await DebtsModel.find({ chatId: chat }, (err) => console.log(err));
 
     if (isEmpty(users)) return bot.sendMessage(chat, 'Пользователи еще не созданы.');
 
