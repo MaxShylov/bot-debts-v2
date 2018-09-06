@@ -61,11 +61,4 @@ module.exports = (bot, isConnectDB) => {
     bot.sendMessage(chat, 'Прощайте! :(');
     bot.leaveChat(chat);
   });
-
-  bot.onText(/\/db/, (msg) => {
-    const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
-
-    bot.sendMessage(chat, `mongodb://${process.env.DB_USER}:${process.env.DB_SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`);
-  });
-
 };
