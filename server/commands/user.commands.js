@@ -18,6 +18,8 @@ module.exports = (bot) => {
         .find({
           login: { $regex: escapeRegExp(login), $options: 'i' },
           chatId: chat
+        }, (err) => {
+          if (err) return bot.sendMessage(chat, JSON.stringify(err));
         })
         .lean()
         .exec(),
@@ -25,6 +27,8 @@ module.exports = (bot) => {
         .find({
           name: { $regex: escapeRegExp(name), $options: 'i' },
           chatId: chat
+        }, (err) => {
+          if (err) return bot.sendMessage(chat, JSON.stringify(err));
         })
         .lean()
         .exec();
@@ -38,6 +42,8 @@ module.exports = (bot) => {
       login,
       debts: {},
       total: 0
+    }, (err) => {
+      if (err) return bot.sendMessage(chat, JSON.stringify(err));
     });
 
 
@@ -50,10 +56,9 @@ module.exports = (bot) => {
     bot.sendMessage(chat, 'list user');
 
     let users = await DebtsModel.find({ chatId: chat }, (err) => {
-      bot.sendMessage(chat, JSON.stringify(err));
+      if (err) return bot.sendMessage(chat, JSON.stringify(err));
     });
 
-    bot.sendMessage(chat, 'list user2');
 
     if (isEmpty(users)) return bot.sendMessage(chat, 'Пользователи еще не созданы.');
 

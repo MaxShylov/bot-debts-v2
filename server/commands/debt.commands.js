@@ -9,7 +9,9 @@ const DebtsModel = require('../models/debts.model');
 
 const getButtons = async (chatId, name = '') => {
   const
-    users = await DebtsModel.find({ chatId }).lean().exec(),
+    users = await DebtsModel.find({ chatId }, (err) => {
+      if (err) return bot.sendMessage(chat, JSON.stringify(err));
+    }).lean().exec(),
     btns = [];
 
   if (isEmpty(users)) return;
@@ -31,7 +33,9 @@ const getButtons = async (chatId, name = '') => {
 };
 
 const getDebts = async (chat) => {
-  const debts = await DebtsModel.find({ chatId: chat }).lean().exec();
+  const debts = await DebtsModel.find({ chatId: chat }, (err) => {
+    if (err) return bot.sendMessage(chat, JSON.stringify(err));
+  }).lean().exec();
 
   let str = '_____________ Debts _____________';
 
@@ -159,6 +163,8 @@ module.exports = (bot) => {
         .findOne({
           login: { $regex: escapeRegExp(login), $options: 'i' },
           chatId: chat
+        }, (err) => {
+          if (err) return bot.sendMessage(chat, JSON.stringify(err));
         })
         .lean()
         .exec();
@@ -198,6 +204,8 @@ module.exports = (bot) => {
         .findOne({
           login: { $regex: escapeRegExp(from.login), $options: 'i' },
           chatId: chat
+        }, (err) => {
+          if (err) return bot.sendMessage(chat, JSON.stringify(err));
         })
         .lean()
         .exec();
@@ -226,7 +234,7 @@ module.exports = (bot) => {
             }
           };
 
-      DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, (err, doc) => {
+      DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, (err) => {
         bot.deleteMessage(chat, msg.message.message_id);
 
         if (err) {
@@ -326,15 +334,21 @@ module.exports = (bot) => {
     sum = +[isAdd ? sum : -sum];
 
     const
-      isFrom = await DebtsModel.find({ login: from, chatId: chat }).lean().exec(),
-      isTo = await DebtsModel.find({ login: to, chatId: chat }).lean().exec();
+      isFrom = await DebtsModel.find({ login: from, chatId: chat }, (err) => {
+        if (err) return bot.sendMessage(chat, JSON.stringify(err));
+      }).lean().exec(),
+      isTo = await DebtsModel.find({ login: to, chatId: chat }, (err) => {
+        if (err) return bot.sendMessage(chat, JSON.stringify(err));
+      }).lean().exec();
 
     if (isEmpty(isFrom)) return bot.sendMessage(chat, `@${from} в базе не найден!`);
     if (isEmpty(isTo)) return bot.sendMessage(chat, `@${to} в базе не найден!`);
 
     const
       query = { login: from, chatId: chat },
-      debt = await DebtsModel.findOne({ login: from, chatId: chat }).lean().exec(),
+      debt = await DebtsModel.findOne({ login: from, chatId: chat }, (err) => {
+        if (err) return bot.sendMessage(chat, JSON.stringify(err));
+      }).lean().exec(),
       newDebt = {
         ...debt,
         total: +debt.total + sum,
