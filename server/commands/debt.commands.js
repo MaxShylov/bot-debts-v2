@@ -30,9 +30,34 @@ const getButtons = async (chatId, name = '') => {
   return btns
 };
 
+const getDebts = async (chat) => {
+  const debts = await DebtsModel.find({ chatId: chat }).lean().exec();
+
+  let str = '_____________ Debts _____________';
+
+  if (!debts || isEmpty(debts)) return 'Нет пользователей';
+
+  debts.map(i => {
+    if (i.debts && Object.keys(i.debts).length && !!findKey(i.debts, (v) => v)) {
+      str += '\n' + i.name + ': ' + i.total + '\n';
+
+      Object.keys(i.debts).map(j => {
+        const name = debts.filter(x => x.login === j)[0].name;
+
+        if (i.debts[j]) str += '\b\b\b\b\b\b\b > ' + name + ': ' + i.debts[j] + '\n'
+      })
+    } else {
+      str += '\n' + i.name + ': Нет долгов\n'
+    }
+
+    str += '__________________________________'
+  });
+
+  return str;
+};
+
 
 module.exports = (bot) => {
-
   let
     from = null,
     to = null,
@@ -266,25 +291,7 @@ module.exports = (bot) => {
   bot.onText(/\/get_debts/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
-      debts = await DebtsModel.find({ chatId: chat }).lean().exec();
-
-    let str = '_____________ Debts _____________';
-
-    debts.map(i => {
-      if (i.debts && Object.keys(i.debts).length && !!findKey(i.debts, (v) => v)) {
-        str += '\n' + i.name + ': ' + i.total + '\n';
-
-        Object.keys(i.debts).map(j => {
-          const name = debts.filter(x => x.login === j)[0].name;
-
-          if (i.debts[j]) str += '\b\b\b\b\b\b\b > ' + name + ': ' + i.debts[j] + '\n'
-        })
-      } else {
-        str += '\n' + i.name + ': Нет долгов\n'
-      }
-
-      str += '__________________________________'
-    });
+      str = await getDebts(chat);
 
     bot.sendMessage(chat, str).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 15000));
 
@@ -349,3 +356,5 @@ module.exports = (bot) => {
   }
 
 };
+
+module.exports.getDebts = getDebts

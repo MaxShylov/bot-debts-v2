@@ -3,10 +3,10 @@ const app = express();
 
 const TelegramBot = require('node-telegram-bot-api');
 const mongoose = require('mongoose');
-const schedule = require('node-schedule');
-const userCommands = require('./commands/user.commands.js');
-const debtCommands = require('./commands/debt.commands.js');
-// require('dotenv').config();
+
+const userCommands = require('./commands/user.commands');
+const debtCommands = require('./commands/debt.commands');
+const helpCommands = require('./commands/help.commands');
 
 const bot = new TelegramBot(process.env.TOKEN, { polling: true });
 
@@ -21,7 +21,7 @@ mongoose.connect(
 );
 
 app.get('/', function (req, res) {
-  res.send('This is telegram bot');
+  res.send('This is telegram bot: @BT-debts');
 });
 
 app.listen(process.env.PORT || 8080, function () {
@@ -29,30 +29,6 @@ app.listen(process.env.PORT || 8080, function () {
 });
 
 
-bot.onText(/\/start/, (msg) => {
-  const chat = msg.chat.id;
-
-  if (!isConnectDB) return bot.sendMessage(chat, 'База данных не подключенна');
-
-  bot.sendMessage(chat, 'Будет вывод долгов каждое 11е число');
-
-  schedule.scheduleJob({ date: 11 }, () => {
-    bot.sendMessage(chat, 'тут будет вывод долгов каждое 11е число');
-  });
-});
-
-bot.onText(/\/db/, (msg) => {
-  const chat = msg.chat.id;
-
-  bot.sendMessage(chat, `База данных ${!isConnectDB ? 'не ' : ''}подключенна`);
-});
-
-bot.onText(/\/delete_bot/, (msg) => {
-  const chat = msg.chat.id;
-
-  bot.sendMessage(chat, 'Прощайте! :(');
-  bot.leaveChat(chat);
-});
-
+helpCommands(bot, isConnectDB);
 userCommands(bot);
 debtCommands(bot);
