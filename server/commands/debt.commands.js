@@ -97,7 +97,7 @@ module.exports = (bot) => {
 
     clear();
 
-    bot.sendMessage(chat, text, options);
+    return bot.sendMessage(chat, text, options);
   });
 
 
@@ -128,7 +128,7 @@ module.exports = (bot) => {
 
     isRepay = true;
 
-    bot.sendMessage(chat, text, options);
+    return bot.sendMessage(chat, text, options);
   });
 
 
@@ -150,7 +150,7 @@ module.exports = (bot) => {
 
       clear()
       bot.sendMessage(chat, isRepay ? textRepay : textDebt);
-      bot.deleteMessage(chat, msg.message.message_id);
+      return bot.deleteMessage(chat, msg.message.message_id);
     }
 
     if (!to) {
@@ -184,14 +184,14 @@ module.exports = (bot) => {
         };
 
       bot.sendMessage(chat, text, options);
-      bot.deleteMessage(chat, msg.message.message_id);
+      return bot.deleteMessage(chat, msg.message.message_id);
     } else if (!to) {
       to = { name, login };
 
       const text = `Сколько ${isRepay ? 'отдал' : 'должен'} ${from.name} ${to.name}?\nВведите сумму через комманду /sum [СУММА]`;
 
       bot.sendMessage(chat, text);
-      bot.deleteMessage(chat, msg.message.message_id);
+      return bot.deleteMessage(chat, msg.message.message_id);
     } else {
 
       const debt = await DebtsModel
@@ -230,9 +230,9 @@ module.exports = (bot) => {
         bot.deleteMessage(chat, msg.message.message_id);
 
         if (err) {
-          bot.sendMessage(chat, 'error: Данные не записались в базу');
+          return bot.sendMessage(chat, 'error: Данные не записались в базу');
         } else {
-          bot.sendMessage(chat, `${from.name} ${isRepay ? 'отдал' : 'должен'} ${to.name} ${sum}грн.`);
+          return bot.sendMessage(chat, `${from.name} ${isRepay ? 'отдал' : 'должен'} ${to.name} ${sum}грн.`);
         }
         clear();
       });
@@ -293,8 +293,7 @@ module.exports = (bot) => {
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
       str = await getDebts(chat);
 
-    bot.sendMessage(chat, str).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 15000));
-
+    return bot.sendMessage(chat, str).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 15000));
   });
 
 
@@ -350,11 +349,11 @@ module.exports = (bot) => {
         ? 'Error: Данные не записались в базу'
         : `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
 
-      bot.sendMessage(chat, text);
       clear();
+      return bot.sendMessage(chat, text);
     });
   }
 
 };
 
-module.exports.getDebts = getDebts
+module.exports.getDebts = getDebts;

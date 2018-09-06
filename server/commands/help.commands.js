@@ -40,18 +40,18 @@ module.exports = (bot, isConnectDB) => {
 
     if (!isConnectDB) return bot.sendMessage(chat, 'База данных не подключенна');
 
-    bot.sendMessage(chat, startText);
-
     schedule.scheduleJob({ date: 11 }, async () => {
       const str = await getDebts();
 
       bot.sendMessage(chat, str);
     });
+
+    return bot.sendMessage(chat, startText);
   });
 
   bot.onText(/\/help/, async (msg) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
-    bot.sendMessage(chat, helpText);
+    return bot.sendMessage(chat, helpText);
   });
 
 

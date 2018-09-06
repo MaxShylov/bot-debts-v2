@@ -20,11 +20,9 @@ mongoose.connect(
   }
 );
 
-app.get('/', function (req, res) {
-  res.send('This is telegram bot: @BT-debts');
-});
+app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-app.listen(process.env.PORT || 8080, function () {
+app.listen(process.env.PORT || 8080, () => {
   console.log('Example app listening on port 3000!');
 });
 
