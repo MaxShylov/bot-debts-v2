@@ -47,9 +47,13 @@ module.exports = (bot) => {
   bot.onText(/\/list_users/, async (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
+    bot.sendMessage(chat, 'list user');
+
     let users = await DebtsModel.find({ chatId: chat }, (err) => {
       bot.sendMessage(chat, JSON.stringify(err));
     });
+
+    bot.sendMessage(chat, 'list user2');
 
     if (isEmpty(users)) return bot.sendMessage(chat, 'Пользователи еще не созданы.');
 
