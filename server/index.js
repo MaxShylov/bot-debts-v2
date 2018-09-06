@@ -16,7 +16,10 @@ mongoose.connect(
   `mongodb://${process.env.DB_USER}:${process.env.DB_SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
   { useNewUrlParser: true },
   (err) => {
-    if (err) isConnectDB = false
+    if (err) {
+      alert(JSON.stringify(err));
+      isConnectDB = false
+    }
   }
 );
 
