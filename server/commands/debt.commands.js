@@ -7,7 +7,6 @@ const isInteger = require('lodash').isInteger;
 const DebtsModel = require('../models/debts.model');
 
 
-
 const getButtons = async (chatId, name = '') => {
   const
     users = await DebtsModel.find({ chatId }, (err) => {
@@ -306,7 +305,7 @@ module.exports = (bot) => {
   });
 
 
-  // ADD
+  // ADD / DEL
   bot.onText(/\/add (.+)/, async (msg, match) => await shortEntry('add', msg, match));
   bot.onText(/\/del (.+)/, async (msg, match) => await shortEntry('del', msg, match));
 
@@ -318,8 +317,6 @@ module.exports = (bot) => {
       fixUser = (login) => userI.includes(login) ? '@' + msg.from.username : login,
       m = match[1].split(' '),
       isAdd = type === 'add';
-
-    console.log('match', match);
 
     let
       from = fixUser(m[0]),
@@ -366,7 +363,7 @@ module.exports = (bot) => {
         ? 'Error: Данные не записались в базу'
         : `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
 
-      bot.sendMessage(chat, text);
+      bot.sendMessage(chat, text).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 3000));
 
       return clear();
     });
