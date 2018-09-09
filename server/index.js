@@ -23,11 +23,7 @@ mongoose.connect(
   }
 );
 
-app.get('/', (req, res) => {
-  startBot();
-
-  res.send('This is telegram bot: @BT-debts')
-});
+app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
 app.listen(process.env.PORT || 8080, () => {
   console.log('Example app listening on port 3000!');

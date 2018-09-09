@@ -53,8 +53,6 @@ module.exports = (bot) => {
   bot.onText(/\/list_users/, async (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
-    bot.sendMessage(chat, 'list user');
-
     let users = await DebtsModel.find({ chatId: chat }, (err) => {
       if (err) return bot.sendMessage(chat, JSON.stringify(err));
     });

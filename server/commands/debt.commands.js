@@ -7,6 +7,7 @@ const isInteger = require('lodash').isInteger;
 const DebtsModel = require('../models/debts.model');
 
 
+
 const getButtons = async (chatId, name = '') => {
   const
     users = await DebtsModel.find({ chatId }, (err) => {
@@ -238,11 +239,11 @@ module.exports = (bot) => {
         bot.deleteMessage(chat, msg.message.message_id);
 
         if (err) {
-          return bot.sendMessage(chat, 'error: Данные не записались в базу');
+          bot.sendMessage(chat, 'error: Данные не записались в базу');
         } else {
-          return bot.sendMessage(chat, `${from.name} ${isRepay ? 'отдал' : 'должен'} ${to.name} ${sum}грн.`);
+          bot.sendMessage(chat, `${from.name} ${isRepay ? 'отдал' : 'должен'} ${to.name} ${sum}грн.`);
         }
-        clear();
+        return clear();
       });
 
     }
@@ -318,6 +319,8 @@ module.exports = (bot) => {
       m = match[1].split(' '),
       isAdd = type === 'add';
 
+    console.log('match', match);
+
     let
       from = fixUser(m[0]),
       to = fixUser(m[1]),
@@ -363,8 +366,9 @@ module.exports = (bot) => {
         ? 'Error: Данные не записались в базу'
         : `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
 
-      clear();
-      return bot.sendMessage(chat, text);
+      bot.sendMessage(chat, text);
+
+      return clear();
     });
   }
 
