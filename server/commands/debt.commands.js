@@ -301,7 +301,9 @@ module.exports = (bot) => {
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
       str = await getDebts(chat);
 
-    return bot.sendMessage(chat, str).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 15000));
+    return bot
+      .sendMessage(chat, str)
+      .then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 45000));
   });
 
 
