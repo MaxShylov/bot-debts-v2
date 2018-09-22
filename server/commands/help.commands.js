@@ -22,16 +22,12 @@ const helpText = `
 /get_debts - Получить список долгов
 /add_user - Добавление пользователя (/add [ИМЯ] [ЛОГИН])
 /list_users - Показать всех пользователей
+/del_all - Отдать вседолги 
+
 
 * В комaнде /add & /del вместо логина можно писать @i, @I, @me для того чтоб бот использовал ваш логин
 
-Остальные команды
-/add_debt - Добавить долг (Пошаговая команда)
-/repay_debt - Отдать долг (Пошаговая команда)
-/sum - добавление суммы в пошаговой команде
-
 /delete_bot - Удалить бот
-/cancel - Отменить операцию добавление/возрат долга в пошаговой команде
 `;
 
 module.exports = (bot, isConnectDB) => {
@@ -49,11 +45,10 @@ module.exports = (bot, isConnectDB) => {
     return bot.sendMessage(chat, startText);
   });
 
-  bot.onText(/\/help/, async (msg) => {
+  bot.onText(/\/help/, (msg) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
     return bot.sendMessage(chat, helpText);
   });
-
 
   bot.onText(/\/delete_bot/, (msg) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;

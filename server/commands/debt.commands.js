@@ -3,6 +3,7 @@ const isNaN = require('lodash').isNaN;
 const isEmpty = require('lodash').isEmpty;
 const findKey = require('lodash').findKey;
 const isInteger = require('lodash').isInteger;
+const keys = require('lodash').keys;
 
 const DebtsModel = require('../models/debts.model');
 
@@ -60,6 +61,13 @@ const getDebts = async (chat) => {
   return str;
 };
 
+const removeMessage = (bot, msg, time) => {
+  const
+    chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
+    t = time * 1000 || 15000;
+
+  return setTimeout(() => bot.deleteMessage(chat, msg.message_id), t)
+};
 
 module.exports = (bot) => {
   let
@@ -67,7 +75,6 @@ module.exports = (bot) => {
     to = null,
     sum = null,
     isRepay = false;
-  // reminder = null; //TODO сделать напоминание через 15 сек после ввода долгов
 
   const clear = () => {
     from = null;
@@ -78,7 +85,7 @@ module.exports = (bot) => {
 
 
   // ADD DEBT
-  bot.onText(/\/add_debt/, async (msg, match) => {
+  bot.onText(/\/---add_debt/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
       text = 'Кто должен?',
@@ -106,7 +113,7 @@ module.exports = (bot) => {
 
 
   // REPAY DEBT
-  bot.onText(/\/repay_debt/, async (msg, match) => {
+  bot.onText(/\/---repay_debt/, async (msg, match) => {
     const
       chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
       text = 'Кто отдал?',
@@ -250,7 +257,7 @@ module.exports = (bot) => {
 
 
   // SUM
-  bot.onText(/\/sum (.+)/, (msg, match) => {
+  bot.onText(/\/---sum (.+)/, (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
     if (!from) {
@@ -303,14 +310,15 @@ module.exports = (bot) => {
 
     return bot
       .sendMessage(chat, str)
-      .then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 45000));
+      .then((message) => removeMessage(bot, message, 45));
   });
 
 
   // ADD / DEL
   bot.onText(/\/add (.+)/, async (msg, match) => await shortEntry('add', msg, match));
+  bot.onText(/\/add@bt_debts_bot (.+)/, async (msg, match) => await shortEntry('add', msg, match));
   bot.onText(/\/del (.+)/, async (msg, match) => await shortEntry('del', msg, match));
-
+  bot.onText(/\/del@bt_debts_bot (.+)/, async (msg, match) => await shortEntry('del', msg, match));
 
   const shortEntry = async (type, msg, match) => {
     const
@@ -365,11 +373,50 @@ module.exports = (bot) => {
         ? 'Error: Данные не записались в базу'
         : `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
 
-      bot.sendMessage(chat, text).then(message => setTimeout(() => bot.deleteMessage(chat, message.message_id), 3000));
+      bot
+        .sendMessage(chat, text)
+        .then((message) => removeMessage(bot, message));
 
       return clear();
     });
-  }
+  };
+
+
+  bot.onText(/\/del_all/, async (msg) => {
+    console.log('del_all');
+    const
+      chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
+      login = msg.from.username,
+      query = { login, chatId: chat },
+      debt = await DebtsModel.findOne(query, (err) => {
+        if (err) return bot.sendMessage(chat, JSON.stringify(err));
+      }).lean().exec(),
+      newDebt = {
+        ...debt,
+        total: 0,
+        debts: {}
+      };
+
+    let successText = '';
+
+    if (!debt) return bot
+      .sendMessage(chat, `Пользователь ${login} не найден`)
+      .then((message) => removeMessage(bot, message));
+
+    keys(debt.debts).map(i => {
+      successText += `@${login} отдал @${i} ${Math.abs(debt.debts[i])}грн.\n`;
+    });
+
+    DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, (err) => {
+      const text = err ? 'Error: Данные не записались в базу' : successText;
+
+      bot
+        .sendMessage(chat, text)
+        .then((message) => removeMessage(bot, message));
+
+      return clear();
+    });
+  });
 
 };
 
