@@ -1,6 +1,8 @@
+const schedule = require('node-schedule');
+
+const { getId } = require( '../helpers/common');
 const { getDebts } = require('./debt.commands');
 
-const schedule = require('node-schedule');
 
 const startText = `
 Данный бот был создан для контроля за долгами между людьми.
@@ -31,29 +33,33 @@ const helpText = `
 `;
 
 module.exports = (bot, isConnectDB) => {
-  bot.onText(/\/start/, async (msg) => {
-    const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
-    if (!isConnectDB) return bot.sendMessage(chat, 'База данных не подключенна');
+  // START
+  bot.onText(/\/start/, async (msg) => {
+    const chatId = getId(msg);
+
+    if (!isConnectDB) return bot.sendMessage(chatId, 'База данных не подключенна');
 
     schedule.scheduleJob({ date: 11 }, async () => {
       const str = await getDebts();
 
-      bot.sendMessage(chat, str);
+      bot.sendMessage(chatId, str);
     });
 
-    return bot.sendMessage(chat, startText);
+    return bot.sendMessage(chatId, startText);
   });
 
-  bot.onText(/\/help/, (msg) => {
-    const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
-    return bot.sendMessage(chat, helpText);
-  });
 
+  // HELP
+  bot.onText(/\/help/, (msg) => bot.sendMessage(getId(msg), helpText));
+
+
+  // DELETE_BOT
   bot.onText(/\/delete_bot/, (msg) => {
-    const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
+    const chatId = getId(msg);
 
-    bot.sendMessage(chat, 'Прощайте! :(');
-    bot.leaveChat(chat);
+    bot.sendMessage(chatId, 'Прощайте! :(');
+    bot.leaveChat(chatId);
   });
+
 };

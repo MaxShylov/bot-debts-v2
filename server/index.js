@@ -8,12 +8,14 @@ const userCommands = require('./commands/user.commands');
 const debtCommands = require('./commands/debt.commands');
 const helpCommands = require('./commands/help.commands');
 
-const bot = new TelegramBot(process.env.TOKEN, { polling: true });
+const { TOKEN, DB_USER, DB_SECRET, DB_HOST, DB_NAME, PORT } = process.env;
+
+const bot = new TelegramBot(TOKEN, { polling: true });
 
 let isConnectDB = true;
 
 mongoose.connect(
-  `mongodb://${process.env.DB_USER}:${process.env.DB_SECRET}@${process.env.DB_HOST}/${process.env.DB_NAME}`,
+  `mongodb://${DB_USER}:${DB_SECRET}@${DB_HOST}/${DB_NAME}`,
   { useNewUrlParser: true },
   (err) => {
     if (err) {
@@ -25,8 +27,8 @@ mongoose.connect(
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-app.listen(process.env.PORT || 8080, () => {
-  console.log('Example app listening on port 3000!');
+app.listen(PORT || 8080, () => {
+  console.log('Example app listening on port 8080!');
 });
 
 const startBot = () => {

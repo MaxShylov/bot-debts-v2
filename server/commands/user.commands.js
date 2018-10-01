@@ -1,54 +1,41 @@
+const { getDebt, getId } = require('../helpers/common');
+
 const compact = require('lodash').compact;
 const isEmpty = require('lodash').isEmpty;
-const escapeRegExp = require('lodash').escapeRegExp;
 
 const DebtsModel = require('../models/debts.model');
 
 
 module.exports = (bot) => {
+
+  // ADD_USER
   bot.onText(/\/add_user ([^;'\"]+)/, async (msg, match) => {
     const
-      chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id,
+      chatId = getId(msg),
       user = compact(match[1].split(' ')),
       name = user[0],
-      login = user[1].includes('@') ? compact(user[1].split('@'))[0] : user[1];
+      login = user[1].includes('@') ? compact(user[1].split('@'))[0] : user[1],
+      userWithLogin = await getDebt(bot, chatId, { login, chatId }),
+      userWithName = await getDebt(bot, chatId, { name, chatId }),
+      textError = (type) => `Пользователь с таким ${type === 'login' ? 'логином' : 'именем'} уже существует.`;
 
-    const
-      userWithLogin = await DebtsModel
-        .find({
-          login: { $regex: escapeRegExp(login), $options: 'i' },
-          chatId: chat
-        }, (err) => {
-          if (err) return bot.sendMessage(chat, JSON.stringify(err));
-        })
-        .lean()
-        .exec(),
-      userWithName = await DebtsModel
-        .find({
-          name: { $regex: escapeRegExp(name), $options: 'i' },
-          chatId: chat
-        }, (err) => {
-          if (err) return bot.sendMessage(chat, JSON.stringify(err));
-        })
-        .lean()
-        .exec();
-
-    if (!isEmpty(userWithLogin)) return bot.sendMessage(chat, 'Пользователь с таким логином уже существует.');
-    if (!isEmpty(userWithName)) return bot.sendMessage(chat, 'Пользователь с таким именем уже существует.');
+    if (!isEmpty(userWithLogin)) return bot.sendMessage(chatId, textError('login'));
+    if (!isEmpty(userWithName)) return bot.sendMessage(chatId, textError('name'));
 
     DebtsModel.create({
-      chatId: chat,
+      chatId,
       name,
       login,
       debts: {},
       total: 0
     }, (err) => {
-      if (err) return bot.sendMessage(chat, JSON.stringify(err));
+      if (err) return bot.sendMessage(chatId, JSON.stringify(err));
     });
 
 
-    bot.sendMessage(chat, `Пользователь ${name} создан!`);
+    bot.sendMessage(chatId, `Пользователь ${name} создан!`);
   });
+
 
   bot.onText(/\/list_users/, async (msg, match) => {
     const chat = msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
