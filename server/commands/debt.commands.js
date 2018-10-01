@@ -5,7 +5,7 @@ const keys = require('lodash').keys;
 const compact = require('lodash').compact;
 
 const DebtsModel = require('../models/debts.model');
-const { getId } = require( '../helpers/common');
+const { getId } = require('../helpers/common');
 
 module.exports = (bot) => {
 
@@ -20,9 +20,16 @@ module.exports = (bot) => {
 
   // Get Debt
   const getDebt = async (chatId, query) => {
-    await DebtsModel.findOne(query, (err) => {
-      if (err) return bot.sendMessage(chatId, JSON.stringify(err));
-    }).lean().exec()
+
+    if (keys(query).length > 1) {
+      return await DebtsModel.findOne(query, (err) => {
+        if (err) return bot.sendMessage(chatId, JSON.stringify(err));
+      }).lean().exec()
+    } else {
+      return await DebtsModel.find(query, (err) => {
+        if (err) return bot.sendMessage(chatId, JSON.stringify(err));
+      }).lean().exec()
+    }
   };
 
   // Get Debts
@@ -40,7 +47,7 @@ module.exports = (bot) => {
         keys(i.debts).map(j => {
           const name = debts.filter(x => x.login === j)[0].name;
 
-          if (i.debts[j]) str += `\b\b\b\b\b\b\b > ${name}: ${i.debts[j]}'\n`
+          if (i.debts[j]) str += `\b\b\b\b\b\b\b > ${name}: ${i.debts[j]}\n`
         })
       } else {
         str += `\n${i.name}: Нет долгов\n`
@@ -128,6 +135,10 @@ module.exports = (bot) => {
         }
       },
       successText = `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
+
+    keys(newDebt.debts).map(i => {
+      if (+newDebt.debts[i] === 0) delete newDebt.debts[i]
+    });
 
     updateDebts(chatId, query, newDebt, successText);
   };
