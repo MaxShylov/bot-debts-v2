@@ -3,6 +3,7 @@ const findKey = require('lodash').findKey;
 const isInteger = require('lodash').isInteger;
 const keys = require('lodash').keys;
 const compact = require('lodash').compact;
+const petrovich = require('petrovich');
 
 const DebtsModel = require('../models/debts.model');
 const { getId } = require('../helpers/common');
@@ -47,7 +48,7 @@ module.exports = (bot) => {
         keys(i.debts).map(j => {
           const name = debts.filter(x => x.login === j)[0].name;
 
-          if (i.debts[j]) str += `\b\b\b\b\b\b\b > ${name}: ${i.debts[j]}\n`
+          if (i.debts[j]) str += `\b\b\b\b\b\b\b > ${petrovich.male.first.dative(name)}: ${i.debts[j]}\n`
         })
       } else {
         str += `\n${i.name}: Нет долгов\n`
@@ -81,7 +82,7 @@ module.exports = (bot) => {
 
     return bot
       .sendMessage(chatId, str)
-      .then((message) => removeMessage(message, 45));
+      .then((message) => removeMessage(message, 180));
   });
 
 
