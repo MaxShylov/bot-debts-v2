@@ -6,7 +6,10 @@ const compact = require('lodash').compact;
 const petrovich = require('petrovich');
 
 const DebtsModel = require('../models/debts.model');
+const LogsModel = require('../models/logs.model');
 const { getId } = require('../helpers/common');
+
+const QUARTER = 1000 * 60 * 60 * 24 * 30 * 3; // 3 month
 
 module.exports = (bot) => {
 
@@ -62,11 +65,22 @@ module.exports = (bot) => {
 
 
   // Update Debts
-  const updateDebts = (chatId, query, newDebt, successText, cb) => {
-    DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, (err) => {
+  const updateDebts = ({ chatId, query, newDebt, successText, type, cb }) => {
+    DebtsModel.findOneAndUpdate(query, newDebt, { upsert: true }, async (err) => {
       const text = err ? 'Error: Данные не записались в базу' : successText;
 
       if (cb) return cb();
+
+      const logs = await LogsModel.find({ chatId });
+
+      logs.map(async i => {
+        console.log('i', i);
+        if (new Date() - new Date(i.createAt) > QUARTER) await LogsModel.findByIdAndDelete(i.id)
+      });
+
+      LogsModel.create({ chatId, log: text });
+
+      if (type === 'dellAll') return bot.sendMessage(chatId, text);
 
       return bot
         .sendMessage(chatId, text)
@@ -141,7 +155,7 @@ module.exports = (bot) => {
       if (+newDebt.debts[i] === 0) delete newDebt.debts[i]
     });
 
-    updateDebts(chatId, query, newDebt, successText);
+    updateDebts({ chatId, query, newDebt, successText });
   };
 
 
@@ -168,7 +182,7 @@ module.exports = (bot) => {
       successText += `@${login} отдал @${i} ${Math.abs(debt.debts[i])}грн.\n`;
     });
 
-    updateDebts(chatId, query, newDebt, successText);
+    updateDebts({ chatId, query, newDebt, successText, type: 'dellAll' });
   });
 
 };

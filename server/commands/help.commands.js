@@ -1,6 +1,7 @@
 const schedule = require('node-schedule');
 
-const { getId } = require( '../helpers/common');
+const LogsModel = require('../models/logs.model');
+const { getId } = require('../helpers/common');
 const { getDebts } = require('./debt.commands');
 
 
@@ -18,10 +19,10 @@ const startText = `
 `;
 
 const helpText = `
-Частые команды
 /add - Добавить долг (/add [ЛОГИН_КТО] [ЛОГИН_КОМУ] [СУММА]) *
 /del - Отдать долг (/del [ЛОГИН_КТО] [ЛОГИН_КОМУ] [СУММА]) *
 /get_debts - Получить список долгов
+/get_logs - Получить список логов
 /add_user - Добавление пользователя (/add [ИМЯ] [ЛОГИН])
 /list_users - Показать всех пользователей
 /del_all - Отдать вседолги 
@@ -31,6 +32,7 @@ const helpText = `
 
 /delete_bot - Удалить бот
 `;
+
 
 module.exports = (bot, isConnectDB) => {
 
@@ -60,6 +62,20 @@ module.exports = (bot, isConnectDB) => {
 
     bot.sendMessage(chatId, 'Прощайте! :(');
     bot.leaveChat(chatId);
+  });
+
+  bot.onText(/\/get_logs/, async (msg) => {
+    const chatId = getId(msg);
+
+    const logs = await LogsModel.find({ chatId }, null, { limit: 10 });
+
+    let answer = '========';
+
+    logs.map(i => answer += '\n' + i.createAt + '\n' + i.log + '\n========');
+
+    return bot
+      .sendMessage(chatId, answer)
+      .then((message) => setTimeout(() => bot.deleteMessage(chatId, message.message_id), 15000));
   });
 
 };
