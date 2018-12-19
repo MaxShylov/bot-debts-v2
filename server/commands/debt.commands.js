@@ -74,7 +74,6 @@ module.exports = (bot) => {
       const logs = await LogsModel.find({ chatId });
 
       logs.map(async i => {
-        console.log('i', i);
         if (new Date() - new Date(i.createAt) > QUARTER) await LogsModel.findByIdAndDelete(i.id)
       });
 
