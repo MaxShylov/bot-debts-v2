@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const config = require('./config');
+const config = require('config');
 
 const TelegramBot = require('node-telegram-bot-api');
 
@@ -15,10 +15,11 @@ const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-console.log('port', config.get('port'));
+console.log('config.get(\'port\')', config.get('port'));
+console.log('process.env.PORT', process.env.PORT);
 
-app.listen(config.get('port'), () => {
-  console.log('Example app listening on port 8080!');
+app.listen(process.env.PORT || config.get('port'), () => {
+  console.log(`Example app listening on port ${process.env.PORT}!`);
 });
 
 connect();
