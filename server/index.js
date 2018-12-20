@@ -1,40 +1,42 @@
 const express = require('express');
 const app = express();
+const config = require('./config');
 
 const TelegramBot = require('node-telegram-bot-api');
-const mongoose = require('mongoose');
+
+const connect = require('./db/connect');
 
 const userCommands = require('./commands/user.commands');
 const debtCommands = require('./commands/debt.commands');
 const helpCommands = require('./commands/help.commands');
+const inDevCommands = require('./commands/inDev.commands');
 
-const { TOKEN, DB_USER, DB_SECRET, DB_HOST, DB_NAME, PORT } = process.env;
+const bot = new TelegramBot(config.get('TOKEN'), { polling: true }, () => {
+  console.log(2);});
 
-const bot = new TelegramBot(TOKEN, { polling: true });
-
-let isConnectDB = true;
-
-mongoose.connect(
-  `mongodb://${DB_USER}:${DB_SECRET}@${DB_HOST}/${DB_NAME}`,
-  { useNewUrlParser: true },
-  (err) => {
-    if (err) {
-      alert(JSON.stringify(err));
-      isConnectDB = false
-    }
-  }
-);
+console.log(1);
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-app.listen(PORT || 8080, () => {
+app.listen(config.get('port'), () => {
   console.log('Example app listening on port 8080!');
 });
 
+connect();
+
 const startBot = () => {
-  helpCommands(bot, isConnectDB);
+  helpCommands(bot);
   userCommands(bot);
   debtCommands(bot);
 };
 
-startBot();
+const startBotInDev = () => {
+  inDevCommands(bot);
+};
+
+
+if (process.env.NODE_ENV === 'development') {
+  startBotInDev()
+} else {
+  startBot();
+}

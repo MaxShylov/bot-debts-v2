@@ -1,6 +1,6 @@
 const schedule = require('node-schedule');
 
-const LogsModel = require('../models/logs.model');
+const LogsModel = require('../db/models/logs.model');
 const { getId } = require('../helpers/common');
 const { getDebts } = require('./debt.commands');
 
@@ -34,13 +34,11 @@ const helpText = `
 `;
 
 
-module.exports = (bot, isConnectDB) => {
+module.exports = (bot) => {
 
   // START
   bot.onText(/\/start/, async (msg) => {
     const chatId = getId(msg);
-
-    if (!isConnectDB) return bot.sendMessage(chatId, 'База данных не подключенна');
 
     schedule.scheduleJob({ date: 11 }, async () => {
       const str = await getDebts();

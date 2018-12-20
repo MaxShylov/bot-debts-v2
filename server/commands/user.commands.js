@@ -3,7 +3,7 @@ const { getDebt, getId } = require('../helpers/common');
 const compact = require('lodash').compact;
 const isEmpty = require('lodash').isEmpty;
 
-const DebtsModel = require('../models/debts.model');
+const DebtsModel = require('../db/models/debts.model');
 
 
 module.exports = (bot) => {

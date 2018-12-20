@@ -5,8 +5,8 @@ const keys = require('lodash').keys;
 const compact = require('lodash').compact;
 const petrovich = require('petrovich');
 
-const DebtsModel = require('../models/debts.model');
-const LogsModel = require('../models/logs.model');
+const DebtsModel = require('../db/models/debts.model');
+const LogsModel = require('../db/models/logs.model');
 const { getId } = require('../helpers/common');
 
 const QUARTER = 1000 * 60 * 60 * 24 * 30 * 3; // 3 month

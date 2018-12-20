@@ -1,4 +1,4 @@
-const DebtsModel = require('../models/debts.model');
+const DebtsModel = require('../db/models/debts.model');
 
 
 const getId = (msg) => msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
