@@ -12,7 +12,7 @@ function getLogger(module) {
   const path = module.filename.split('/').slice(-2).join('/');
 
   return winston.createLogger({
-    level: isDev ? 'debug' : 'info',
+    level: isDev ? 'info' : 'info',
     format: combine(
       colorize(),
       label({ label: path }),
@@ -23,7 +23,7 @@ function getLogger(module) {
       new winston.transports.Console(),
       new winston.transports.File({
         filename: 'combined.log',
-        level: 'notice'
+        level: 'info'
       })
     ]
   })
