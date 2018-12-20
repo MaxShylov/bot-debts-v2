@@ -8,8 +8,10 @@ const petrovich = require('petrovich');
 const DebtsModel = require('../db/models/debts.model');
 const LogsModel = require('../db/models/logs.model');
 const { getId } = require('../helpers/common');
+const log = require('../libs/log');
 
 const QUARTER = 1000 * 60 * 60 * 24 * 30 * 3; // 3 month
+
 
 module.exports = (bot) => {
 
@@ -78,6 +80,8 @@ module.exports = (bot) => {
       });
 
       LogsModel.create({ chatId, log: text });
+
+      log.notice(text);
 
       if (type === 'dellAll') return bot.sendMessage(chatId, text);
 

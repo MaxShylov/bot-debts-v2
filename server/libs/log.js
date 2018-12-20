@@ -11,15 +11,10 @@ const myFormat = printf(info => {
 
 function getLogger(module) {
 
-
-
   const pathShort = module.filename.split('/').slice(-2).join('/');
   const pathToFile = 'combined.log';
 
-  console.log('pathToFile', pathToFile);
-
   return winston.createLogger({
-    level: isDev ? 'info' : 'info',
     format: combine(
       colorize(),
       label({ label: pathShort }),
@@ -28,10 +23,12 @@ function getLogger(module) {
       myFormat
     ),
     transports: [
-      new winston.transports.Console(),
+      new winston.transports.Console({
+        level: isDev ? 'debug' : 'info',
+      }),
       new winston.transports.File({
         filename: pathToFile,
-        level: 'info',
+        level: 'notice',
         timestamp: true
       })
     ]

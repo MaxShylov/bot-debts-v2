@@ -65,7 +65,7 @@ module.exports = (bot) => {
   bot.onText(/\/get_logs/, async (msg) => {
     const chatId = getId(msg);
 
-    const logs = await LogsModel.find({ chatId }, null, { limit: 10 });
+    const logs = await LogsModel.find({ chatId }, null, { limit: -10 });
 
     let answer = '========';
 
