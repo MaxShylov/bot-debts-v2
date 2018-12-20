@@ -1,5 +1,5 @@
 const winston = require('winston');
-const path = require('path');
+// const path = require('path');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -14,7 +14,7 @@ function getLogger(module) {
 
 
   const pathShort = module.filename.split('/').slice(-2).join('/');
-  const pathToFile = path.join(__dirname, '../logs/combined.log');
+  const pathToFile = 'combined.log';
 
   console.log('pathToFile', pathToFile);
 

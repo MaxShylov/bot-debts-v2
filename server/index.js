@@ -2,6 +2,8 @@ const express = require('express');
 const app = express();
 const config = require('./config');
 
+const path = require('path');
+
 const TelegramBot = require('node-telegram-bot-api');
 
 const connect = require('./db/connect');
@@ -14,6 +16,8 @@ const inDevCommands = require('./commands/inDev.commands');
 const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
+
+app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
 
 
 app.listen(config.get('PORT'), () => {
