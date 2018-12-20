@@ -11,7 +11,7 @@ const debtCommands = require('./commands/debt.commands');
 const helpCommands = require('./commands/help.commands');
 const inDevCommands = require('./commands/inDev.commands');
 
-const bot = new TelegramBot(config.get('TOKEN'), { polling: true }});
+const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
