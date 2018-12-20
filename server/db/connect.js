@@ -11,6 +11,7 @@ const { DB_USER, DB_SECRET, DB_HOST, DB_NAME } = process.env;
 // const DB_NAME = config('DB_NAME')
 
 log.info('123');
+log.error('123');
 
 const connect = () => mongoose.connect(
   `mongodb://${DB_USER}:${DB_SECRET}@${DB_HOST}/${DB_NAME}`,

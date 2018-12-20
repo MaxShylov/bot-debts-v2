@@ -1,7 +1,9 @@
 const winston = require('winston');
+const path = require('path');
+
 const isDev = process.env.NODE_ENV === 'development';
 
-const { combine, timestamp, label, printf, colorize } = winston.format;
+const { combine, timestamp, label, printf, colorize, json } = winston.format;
 
 const myFormat = printf(info => {
   return `${!isDev ? info.timestamp : ''} ${info.level}: [${info.label}] ${info.message}`;
@@ -9,21 +11,28 @@ const myFormat = printf(info => {
 
 function getLogger(module) {
 
-  const path = module.filename.split('/').slice(-2).join('/');
+
+
+  const pathShort = module.filename.split('/').slice(-2).join('/');
+  const pathToFile = path.join(__dirname, '../logs/combined.log');
+
+  console.log('pathToFile', pathToFile);
 
   return winston.createLogger({
     level: isDev ? 'info' : 'info',
     format: combine(
       colorize(),
-      label({ label: path }),
+      label({ label: pathShort }),
       timestamp(),
+      json(),
       myFormat
     ),
     transports: [
       new winston.transports.Console(),
       new winston.transports.File({
-        filename: 'combined.log',
-        level: 'info'
+        filename: pathToFile,
+        level: 'info',
+        timestamp: true
       })
     ]
   })
