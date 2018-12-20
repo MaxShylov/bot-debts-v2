@@ -15,6 +15,8 @@ const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
+console.log('port', config.get('port'));
+
 app.listen(process.env.PORT || config.get('port'), () => {
   console.log('Example app listening on port 8080!');
 });
