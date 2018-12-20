@@ -12,7 +12,7 @@ function getLogger(module) {
   const path = module.filename.split('/').slice(-2).join('/');
 
   return winston.createLogger({
-    level: isDev ? 'debug' : 'error',
+    level: isDev ? 'debug' : 'info',
     format: combine(
       colorize(),
       label({ label: path }),
