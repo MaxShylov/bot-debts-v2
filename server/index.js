@@ -37,8 +37,10 @@ const startBotInDev = () => {
 };
 
 
-if (process.env.NODE_ENV === 'development') {
-  startBotInDev()
-} else {
-  startBot();
-}
+// if (process.env.NODE_ENV === 'development') {
+//   startBotInDev()
+// } else {
+//   startBot();
+// }
+
+startBot();

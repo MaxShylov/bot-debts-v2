@@ -4,6 +4,7 @@ const LogsModel = require('../db/models/logs.model');
 const { getId } = require('../helpers/common');
 const { getDebts } = require('./debt.commands');
 
+const compact = require('lodash').compact;
 
 const startText = `
 Данный бот был создан для контроля за долгами между людьми.
@@ -62,10 +63,12 @@ module.exports = (bot) => {
     bot.leaveChat(chatId);
   });
 
-  bot.onText(/\/get_logs/, async (msg) => {
-    const chatId = getId(msg);
+  const getLogs = async (msg) => {
+    const
+      chatId = getId(msg),
+      count = +compact(msg.text.split(' '))[1];
 
-    const logs = await LogsModel.find({ chatId }).sort().limit(10);
+    const logs = await LogsModel.find({ chatId }).sort('-createAt').limit(count || 3);
 
     let answer = '========';
 
@@ -74,6 +77,8 @@ module.exports = (bot) => {
     return bot
       .sendMessage(chatId, answer)
       .then((message) => setTimeout(() => bot.deleteMessage(chatId, message.message_id), 15000));
-  });
+  };
+
+  bot.onText(/\/get_logs/, async (msg) => await getLogs(msg));
 
 };

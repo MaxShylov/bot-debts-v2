@@ -3,10 +3,8 @@ const { getId } = require('../helpers/common');
 
 module.exports = (bot) => {
 
-  bot.onText(/\/*/, (msg) => {
+  bot.onText(/\/*/, (msg, match) => {
     const chatId = getId(msg);
-
-    console.log('msg', msg);
 
     return bot
       .sendMessage(chatId, 'The bot in develop mode')
