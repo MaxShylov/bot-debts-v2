@@ -5,6 +5,7 @@ const { getId } = require('../helpers/common');
 const { getDebts } = require('./debt.commands');
 
 const compact = require('lodash').compact;
+const reverse = require('lodash').reverse;
 
 const startText = `
 Данный бот был создан для контроля за долгами между людьми.
@@ -72,7 +73,9 @@ module.exports = (bot) => {
 
     let answer = '========';
 
-    logs.map(i => answer += '\n' + i.createAt + '\n' + i.log + '\n========');
+    for (let i = logs.length - 1; i > -1; i--) {
+      answer += '\n' + logs[i].createAt + '\n' + logs[i].log + '\n========'
+    }
 
     return bot
       .sendMessage(chatId, answer)
