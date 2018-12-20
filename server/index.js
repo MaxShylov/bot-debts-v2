@@ -15,11 +15,9 @@ const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-console.log('config.get(\'port\')', config.get('port'));
-console.log('process.env.PORT', process.env.PORT);
 
-app.listen(process.env.PORT || config.get('port'), () => {
-  console.log(`Example app listening on port ${process.env.PORT}!`);
+app.listen(config.get('PORT'), () => {
+  console.log(`Example app listening on port ${config.get('PORT')}!`);
 });
 
 connect();
