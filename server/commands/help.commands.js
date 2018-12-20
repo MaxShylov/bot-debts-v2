@@ -74,7 +74,7 @@ module.exports = (bot) => {
     let answer = '========';
 
     for (let i = logs.length - 1; i > -1; i--) {
-      answer += '\n' + logs[i].createAt + '\n' + logs[i].log + '\n========'
+      answer += '\n' + logs[i].createAt.toLocaleString() + '\n' + logs[i].log + '\n========'
     }
 
     return bot
