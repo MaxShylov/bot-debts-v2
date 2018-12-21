@@ -1,5 +1,4 @@
 const winston = require('winston');
-// const path = require('path');
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -28,9 +27,9 @@ function getLogger(module) {
       }),
       new winston.transports.File({
         filename: pathToFile,
-        level: 'notice',
+        level: 'silly',
         timestamp: true
-      })
+      }),
     ]
   })
 

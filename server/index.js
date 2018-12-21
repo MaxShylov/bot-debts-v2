@@ -8,9 +8,10 @@ const TelegramBot = require('node-telegram-bot-api');
 
 const connect = require('./db/connect');
 
-const userCommands = require('./commands/user.commands');
-const debtCommands = require('./commands/debt.commands');
-const helpCommands = require('./commands/help.commands');
+const usersCommands = require('./commands/users');
+const debtsCommands = require('./commands/debts');
+const helpCommands = require('./commands/help');
+const logsCommands = require('./commands/logs');
 const inDevCommands = require('./commands/inDev.commands');
 
 const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
@@ -26,10 +27,13 @@ app.listen(config.get('PORT'), () => {
 
 connect();
 
+console.log('config', config.get('dbConnected'));
+
 const startBot = () => {
   helpCommands(bot);
-  userCommands(bot);
-  debtCommands(bot);
+  logsCommands(bot);
+  usersCommands(bot);
+  debtsCommands(bot);
 };
 
 const startBotInDev = () => {
@@ -37,10 +41,10 @@ const startBotInDev = () => {
 };
 
 
-// if (process.env.NODE_ENV === 'development') {
-//   startBotInDev()
-// } else {
-//   startBot();
-// }
+if (process.env.NODE_ENV === 'development') {
+  startBotInDev()
+} else {
+  startBot();
+}
 
-startBot();
+// startBot();
