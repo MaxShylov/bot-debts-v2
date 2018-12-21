@@ -2,7 +2,7 @@ const { getId, messageWithRemove } = require('../../helpers/common');
 
 const schedule = require('node-schedule');
 const { getDebts } = require('../debts/index');
-
+const config = require('../../config');
 
 const startText = `
 Данный бот был создан для контроля за долгами между людьми.

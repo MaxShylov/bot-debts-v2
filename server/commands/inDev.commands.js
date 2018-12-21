@@ -1,5 +1,7 @@
 const { getId } = require('../helpers/common');
 
+const start = require('./help/start');
+
 const addUser = require('./users/addUser');
 const listUsers = require('./users/listUsers');
 
@@ -16,6 +18,8 @@ module.exports = (bot) => {
     const chatId = getId(msg);
 
     if (chatId === DEV_CHAT_ID) {
+      if (msg.text.includes('/start')) return await start(bot, msg);
+
       if (msg.text.includes('/add_user')) return await addUser(bot, msg);
       if (msg.text.includes('/list_users')) return await listUsers(bot, msg);
 
