@@ -1,40 +1,50 @@
 const express = require('express');
 const app = express();
+const config = require('./config');
+
+const path = require('path');
 
 const TelegramBot = require('node-telegram-bot-api');
-const mongoose = require('mongoose');
 
-const userCommands = require('./commands/user.commands');
-const debtCommands = require('./commands/debt.commands');
-const helpCommands = require('./commands/help.commands');
+const connect = require('./db/connect');
 
-const { TOKEN, DB_USER, DB_SECRET, DB_HOST, DB_NAME, PORT } = process.env;
+const usersCommands = require('./commands/users');
+const debtsCommands = require('./commands/debts');
+const helpCommands = require('./commands/help');
+const logsCommands = require('./commands/logs');
+const inDevCommands = require('./commands/inDev.commands');
 
-const bot = new TelegramBot(TOKEN, { polling: true });
-
-let isConnectDB = true;
-
-mongoose.connect(
-  `mongodb://${DB_USER}:${DB_SECRET}@${DB_HOST}/${DB_NAME}`,
-  { useNewUrlParser: true },
-  (err) => {
-    if (err) {
-      alert(JSON.stringify(err));
-      isConnectDB = false
-    }
-  }
-);
+const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
 
-app.listen(PORT || 8080, () => {
-  console.log('Example app listening on port 8080!');
+app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
+
+
+app.listen(config.get('PORT'), () => {
+  console.log(`Example app listening on port ${config.get('PORT')}!`);
 });
 
+connect();
+
+console.log('config', config.get('dbConnected'));
+
 const startBot = () => {
-  helpCommands(bot, isConnectDB);
-  userCommands(bot);
-  debtCommands(bot);
+  helpCommands(bot);
+  logsCommands(bot);
+  usersCommands(bot);
+  debtsCommands(bot);
 };
 
-startBot();
+const startBotInDev = () => {
+  inDevCommands(bot);
+};
+
+
+if (process.env.NODE_ENV === 'development') {
+  startBotInDev()
+} else {
+  startBot();
+}
+
+// startBot();

@@ -7,3 +7,5 @@ package-lock.json
 yarn.lock
 /node_modules
 /server/oldCommand
+
+*.log
