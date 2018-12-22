@@ -35,7 +35,8 @@ module.exports = async (type, bot, msg) => {
     sum = +m[3];
 
   const error = checkErrors(from, to, sum);
-  if (error) message(error);
+
+  if (error) return message(error);
 
   from = from.slice(1);
   to = to.slice(1);
