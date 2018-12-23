@@ -21,7 +21,7 @@ const startText = `
 module.exports = async (bot, msg) => {
   const chatId = getId(msg);
 
-  if (!config.get('dbConnected')) return messageWithRemove(bot, chatId, 'Database is not connect', 3);
+  if (!config.get('dbConnected')) return messageWithRemove(bot, chatId, 'База данных не подключена, попробуйте позже', 3);
 
   schedule.scheduleJob({ date: 11 }, async () => {
     const str = await getDebts();

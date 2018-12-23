@@ -9,7 +9,7 @@ module.exports = async (bot, msg) => {
     chatId = getId(msg),
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 3);
 
-  if (!config.get('dbConnected')) return message('Database is not connect');
+  if (!config.get('dbConnected')) return message('База данных не подключена, попробуйте позже');
 
   let users = await DebtsModel.find({ chatId }, (err) => {
     if (err) return bot.sendMessage(chatId, JSON.stringify(err));

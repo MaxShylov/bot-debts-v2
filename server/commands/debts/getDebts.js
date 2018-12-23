@@ -3,11 +3,10 @@ const isEmpty = require('lodash/isEmpty');
 const findKey = require('lodash/findKey');
 const keys = require('lodash/keys');
 
-const path = require('path')
-
 
 const { getId, messageWithRemove, getDebt } = require('../../helpers/common');
 const config = require('../../config');
+const saveLog = require('../logs/saveLog');
 
 
 module.exports = async (bot, msg) => {
@@ -15,7 +14,7 @@ module.exports = async (bot, msg) => {
     chatId = getId(msg),
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 3);
 
-  if (!config.get('dbConnected')) return message('Database is not connect');
+  if (!config.get('dbConnected')) return message('База данных не подключена, попробуйте позже');
 
   const debts = await getDebt(bot, chatId, { chatId });
 
@@ -42,6 +41,8 @@ module.exports = async (bot, msg) => {
 
     str += '_______'
   }
+
+  saveLog(chatId, str);
 
   return message(str, 180);
 };

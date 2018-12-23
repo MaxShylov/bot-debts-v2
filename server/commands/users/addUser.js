@@ -14,7 +14,7 @@ module.exports = async (bot, msg) => {
     login = user[2].includes('@') ? compact(user[2].split('@'))[0] : user[2],
     message = (text) => messageWithRemove(bot, chatId, text, 3);
 
-  if (!config.get('dbConnected')) return message('Database is not connect');
+  if (!config.get('dbConnected')) return message('База данных не подключена, попробуйте позже');
 
   const
     userWithLogin = await getDebt(bot, chatId, { login, chatId }),
