@@ -11,7 +11,7 @@ const saveLog = require('../logs/saveLog');
 const checkErrors = (from, to, sum) => {
   let error = null;
 
-  if (!config.get('dbConnected')) error = 'Database is not connect';
+  if (!config.get('dbConnected')) error = 'База данных не подключена, попробуйте позже';
 
   if (!from || !to || !sum) error = 'Команда введена неверно!';
   if (!from.includes('@') || !to.includes('@')) error = 'ЛОГИН должен содержать симлов "@"!';
@@ -50,8 +50,11 @@ module.exports = async (bot, msg, type) => {
 
   if (isEmpty(fromDebts) || isEmpty(toDebts)) return message(`@${isEmpty(toDebts) ? to : from} в базе не найден!`);
 
-  if (type === 'del' && !toDebts.debts[from]) {
-    return message(`Вы ничего не должны @${to}`)
+  if (type === 'del') {
+    const dbts = fromDebts.debts;
+
+    if (!dbts || !dbts[to]) return message(`Вы ничего не должны @${to}.`);
+    if (dbts || dbts[to] < sum) return message(`Вы должны @${to} всего лишь ${dbts[to]} грн.`);
   }
 
   let
