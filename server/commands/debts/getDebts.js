@@ -3,11 +3,10 @@ const isEmpty = require('lodash/isEmpty');
 const findKey = require('lodash/findKey');
 const keys = require('lodash/keys');
 
-const path = require('path')
-
 
 const { getId, messageWithRemove, getDebt } = require('../../helpers/common');
 const config = require('../../config');
+const saveLog = require('../logs/saveLog');
 
 
 module.exports = async (bot, msg) => {
@@ -42,6 +41,8 @@ module.exports = async (bot, msg) => {
 
     str += '_______'
   }
+
+  saveLog(chatId, str);
 
   return message(str, 180);
 };
