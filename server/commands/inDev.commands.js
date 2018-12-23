@@ -9,6 +9,13 @@ const getDebts = require('./debts/getDebts');
 const addOrDel = require('./debts/addOrDel');
 const delAll = require('./debts/delAll');
 
+const getLogs = require('./logs/getLogs');
+
+const saveLog = require('./logs/saveLog');
+
+
+
+
 const DEV_CHAT_ID = 276399001;
 
 
@@ -24,9 +31,13 @@ module.exports = (bot) => {
       if (msg.text.includes('/list_users')) return await listUsers(bot, msg);
 
       if (msg.text.includes('/get_debts')) return await getDebts(bot, msg);
-      if (msg.text.includes('/add ')) return await addOrDel('add', bot, msg);
-      if (msg.text.includes('/del ')) return await addOrDel('del', bot, msg);
-      if (msg.text.includes('/del_all')) return await delAll(bot, msg)
+      if (msg.text.includes('/add ')) return await addOrDel(bot, msg, 'add');
+      if (msg.text.includes('/del ')) return await addOrDel(bot, msg, 'del');
+      if (msg.text.includes('/del_all')) return await delAll(bot, msg);
+
+      if (msg.text.includes('/get_logs')) return await getLogs(bot, msg)
+
+      if (msg.text.includes('/save_log')) return await saveLog('', 213)
     }
 
     return bot

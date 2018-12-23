@@ -3,6 +3,8 @@ const isEmpty = require('lodash/isEmpty');
 const findKey = require('lodash/findKey');
 const keys = require('lodash/keys');
 
+const path = require('path')
+
 
 const { getId, messageWithRemove, getDebt } = require('../../helpers/common');
 const config = require('../../config');
@@ -25,7 +27,7 @@ module.exports = async (bot, msg) => {
     const d = debts[i];
 
     if (d.debts && keys(d.debts).length && !!findKey(d.debts, (v) => v)) {
-      str += '\n' + d.name + ': ' + d.total + '\n';
+      str += `\n${d.name} должен: (${d.total})\n`;
 
       for (let j = 0; j < keys(d.debts).length; j++) {
         const

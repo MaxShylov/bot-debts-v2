@@ -1,11 +1,11 @@
 const isEmpty = require('lodash/isEmpty');
 const isInteger = require('lodash/isInteger');
-const keys = require('lodash/keys');
 const compact = require('lodash/compact');
 
 const updateDebts = require('./updateDebts');
-const { getId, getDebt, messageWithRemove } = require('../../helpers/common');
+const { getId, getDebt, messageWithRemove, clearObj } = require('../../helpers/common');
 const config = require('../../config');
+const saveLog = require('../logs/saveLog');
 
 
 const checkErrors = (from, to, sum) => {
@@ -20,7 +20,7 @@ const checkErrors = (from, to, sum) => {
   return error
 };
 
-module.exports = async (type, bot, msg) => {
+module.exports = async (bot, msg, type) => {
   const
     chatId = getId(msg),
     userI = ['@i', '@I', '@me', 'Me', '@ME'],
@@ -43,27 +43,73 @@ module.exports = async (type, bot, msg) => {
   sum = +[isAdd ? sum : -sum];
 
   const
-    isFrom = await getDebt(chatId, { chatId, login: from }),
-    isTo = await getDebt(chatId, { chatId, login: to });
+    fromQuery = { chatId, login: from },
+    toQuery = { chatId, login: to },
+    fromDebts = await getDebt(bot, chatId, fromQuery),
+    toDebts = await getDebt(bot, chatId, toQuery);
 
-  if (isEmpty(isFrom) || isEmpty(isTo)) return message(`@${isEmpty(isTo) ? to : from} в базе не найден!`);
+  if (isEmpty(fromDebts) || isEmpty(toDebts)) return message(`@${isEmpty(toDebts) ? to : from} в базе не найден!`);
 
-  const
-    query = { chatId, login: from },
-    debt = await getDebt(bot, chatId, query),
-    newDebt = {
-      ...debt,
-      total: +debt.total + sum,
+  if (type === 'del' && !toDebts.debts[from]) {
+    return message(`Вы ничего не должны @${to}`)
+  }
+
+  let
+    successText = '',
+    status = true;
+
+  if (type === 'add' && toDebts.debts && toDebts.debts[from]) {
+    const dbt = +toDebts.debts[from];
+    let fromSum = 0;
+
+    if (sum < dbt) {
+      fromSum = sum;
+      sum = 0
+    } else {
+      fromSum = dbt;
+      sum -= fromSum
+    }
+
+    const newToDebt = {
+      ...toDebts,
+      total: +toDebts.total - fromSum,
       debts: {
-        ...debt.debts,
-        [to]: debt.debts && debt.debts[to] ? +debt.debts[to] + sum : sum
+        ...toDebts.debts,
+        [from]: dbt - fromSum
       }
-    },
-    successText = `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
+    };
 
-  keys(newDebt.debts).map(i => {
-    if (+newDebt.debts[i] === 0) delete newDebt.debts[i]
-  });
+    successText += `Так как у @${to} есть долг @${from} в размере ${dbt} то:\n` +
+      `@${to} отдал @${from} ${Math.abs(dbt)}грн.\n`;
 
-  await updateDebts({ bot, chatId, query, newDebt, successText });
+    clearObj(newToDebt.debts);
+
+    status = await updateDebts({ bot, chatId, query: toQuery, newDebt: newToDebt });
+  }
+
+  if (status && sum) {
+    const
+      dbts = fromDebts.debts,
+      newFromDebt = {
+        ...fromDebts,
+        total: +fromDebts.total + sum,
+        debts: {
+          ...dbts,
+          [to]: dbts && dbts[to] ? +dbts[to] + sum : sum
+        }
+      };
+
+    successText += `@${from} ${isAdd ? 'должен' : 'отдал'} @${to} ${Math.abs(sum)}грн.`;
+
+    clearObj(newFromDebt.debts);
+
+    status = await updateDebts({ bot, chatId, query: fromQuery, newDebt: newFromDebt });
+  }
+
+  if (status) {
+    saveLog(chatId, successText);
+    message(successText, 30)
+  }
+
+  return status;
 };
