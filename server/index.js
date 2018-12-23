@@ -27,8 +27,6 @@ app.listen(config.get('PORT'), () => {
 
 connect();
 
-console.log('config', config.get('dbConnected'));
-
 const startBot = () => {
   helpCommands(bot);
   logsCommands(bot);

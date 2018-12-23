@@ -4,6 +4,7 @@ const isEmpty = require('lodash/isEmpty');
 const updateDebts = require('./updateDebts');
 const { getId, getDebt, messageWithRemove } = require('../../helpers/common');
 const config = require('../../config');
+const saveLog = require('../logs/saveLog');
 
 
 module.exports = async (bot, msg) => {
@@ -28,14 +29,15 @@ module.exports = async (bot, msg) => {
 
   let successText = '';
 
-  console.log('debt.debts', debt.debts);
-
   for (let i = 0; i < keys(debt.debts).length; i++) {
     const name = keys(debt.debts)[i];
     successText += `@${login} отдал @${name } ${Math.abs(debt.debts[name])}грн.\n`;
   }
 
-  console.log('successText', successText);
+  const status = await updateDebts({ bot, chatId, query, newDebt });
 
-  await updateDebts({ bot, chatId, query, newDebt, successText, type: 'dellAll' });
+  if (status) {
+    saveLog(chatId, successText);
+    message(successText, 100)
+  }
 };

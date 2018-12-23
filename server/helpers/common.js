@@ -1,4 +1,5 @@
 const keys = require('lodash/keys');
+const forEach = require('lodash/forEach');
 
 const DebtsModel = require('../db/models/debts.model');
 
@@ -26,9 +27,12 @@ const messageWithRemove = (bot, chatId, text, time) => {
     .then((message) => setTimeout(() => bot.deleteMessage(chatId, message.message_id), t));
 };
 
+const clearObj = (obj) => forEach(obj, (v, k) => !v && delete obj[k]);
+
 
 module.exports = {
   getId,
   getDebt,
-  messageWithRemove
+  messageWithRemove,
+  clearObj
 };
