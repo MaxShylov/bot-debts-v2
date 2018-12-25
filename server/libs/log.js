@@ -2,7 +2,7 @@ const winston = require('winston');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const { combine, timestamp, label, printf, colorize, json, simple } = winston.format;
+const { combine, timestamp, label, printf, colorize, json } = winston.format;
 
 const myFormat = printf(info => {
   return `${!isDev ? info.timestamp : ''} ${info.level}: [${info.label}] ${info.message}`;
