@@ -2,7 +2,7 @@ const winston = require('winston');
 
 const isDev = process.env.NODE_ENV === 'development';
 
-const { combine, timestamp, label, printf, colorize, json } = winston.format;
+const { combine, timestamp, label, printf, colorize, json, simple } = winston.format;
 
 const myFormat = printf(info => {
   return `${!isDev ? info.timestamp : ''} ${info.level}: [${info.label}] ${info.message}`;
@@ -15,7 +15,6 @@ function getLogger(module) {
 
   return winston.createLogger({
     format: combine(
-      colorize(),
       label({ label: pathShort }),
       timestamp(),
       json(),
@@ -24,12 +23,16 @@ function getLogger(module) {
     transports: [
       new winston.transports.Console({
         level: isDev ? 'debug' : 'info',
+        format: combine(
+          colorize(),
+          myFormat
+        )
       }),
       new winston.transports.File({
         filename: pathToFile,
         level: 'silly',
         timestamp: true
-      }),
+      })
     ]
   })
 

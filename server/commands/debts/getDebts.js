@@ -8,9 +8,12 @@ const { getId, messageWithRemove, getDebt } = require('../../helpers/common');
 const config = require('../../config');
 const saveLog = require('../logs/saveLog');
 
+const SPACE = '\b\b\b\b\b\b\b';
+
 
 module.exports = async (bot, msg) => {
   const
+    HR = '_______',
     chatId = getId(msg),
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 3);
 
@@ -20,26 +23,26 @@ module.exports = async (bot, msg) => {
 
   if (!debts || isEmpty(debts)) return 'Нет пользователей';
 
-  let str = '_______';
+  let str = HR;
 
   for (let i = 0; i < debts.length; i++) {
     const d = debts[i];
 
     if (d.debts && keys(d.debts).length && !!findKey(d.debts, (v) => v)) {
-      str += `\n${d.name} должен: (${d.total})\n`;
+      str += `\n<b>${d.name} должен</b>: <i>(${d.total}</i>)\n`;
 
       for (let j = 0; j < keys(d.debts).length; j++) {
         const
           key = keys(d.debts)[j],
           name = debts.filter(x => x.login === key)[0].name;
 
-        if (d.debts[key]) str += `\b\b\b\b\b\b\b > ${petrovich.male.first.dative(name)}: ${d.debts[key]}\n`
+        if (d.debts[key]) str += `${SPACE} > ${petrovich.male.first.dative(name)}: ${d.debts[key]}\n`
       }
     } else {
-      str += `\n${d.name}: Нет долгов\n`
+      str += `\n<b>${d.name}</b>: Нет долгов\n`
     }
 
-    str += '_______'
+    str += HR
   }
 
   saveLog(chatId, str);

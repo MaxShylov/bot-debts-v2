@@ -4,7 +4,6 @@ const forEach = require('lodash/forEach');
 const DebtsModel = require('../db/models/debts.model');
 
 
-
 const getId = (msg) => msg.hasOwnProperty('chat') ? msg.chat.id : msg.from.id;
 
 const getDebt = async (bot, chatId, query) => {
@@ -23,7 +22,7 @@ const messageWithRemove = (bot, chatId, text, time) => {
   const t = time * 1000 || 15000;
 
   bot
-    .sendMessage(chatId, text)
+    .sendMessage(chatId, text, { parse_mode: 'HTML' })
     .then((message) => setTimeout(() => bot.deleteMessage(chatId, message.message_id), t));
 };
 

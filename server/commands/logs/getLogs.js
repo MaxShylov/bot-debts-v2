@@ -4,6 +4,8 @@ const LogsModel = require('../../db/models/logs.model');
 const { getId, messageWithRemove } = require('../../helpers/common');
 const config = require('../../config');
 
+const HR = '========';
+
 
 module.exports = async (bot, msg) => {
   const
@@ -15,10 +17,18 @@ module.exports = async (bot, msg) => {
 
   const logs = await LogsModel.find({ chatId }).sort('-createAt').limit(count || 3);
 
-  let answer = '========';
+  let answer = HR;
 
   for (let i = logs.length - 1; i > -1; i--) {
-    answer += '\n' + logs[i].createAt.toLocaleString() + '\n' + logs[i].log + '\n========'
+    const
+      { createAt, updateAt, log } = logs[i],
+      date = (updateAt || createAt).toLocaleString();
+
+    answer += (
+      '\n' + date +
+      '\n' + log +
+      '\n' + HR
+    )
   }
 
   return message(answer, 10);

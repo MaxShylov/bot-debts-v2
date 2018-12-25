@@ -5,7 +5,8 @@ const Schema = mongoose.Schema;
 const LogsSchema = new Schema({
   chatId: Number,
   log: String,
-  createAt: { type: Date, default: Date.now }
+  createAt: { type: Date, default: Date.now },
+  updateAt: { type: Date, default: Date.now }
 },{
   collection: 'LogsCollection'
 });

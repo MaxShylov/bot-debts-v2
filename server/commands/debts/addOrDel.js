@@ -23,8 +23,8 @@ const checkErrors = (from, to, sum) => {
 module.exports = async (bot, msg, type) => {
   const
     chatId = getId(msg),
-    userI = ['@i', '@I', '@me', 'Me', '@ME'],
-    fixUser = (login) => userI.includes(login) ? '@' + msg.from.username : login,
+    userI = ['@i', '@me'],
+    fixUser = (login) => userI.includes(login.toLowerCase()) ? '@' + msg.from.username : login,
     m = compact(msg.text.split(' ')),
     isAdd = type === 'add',
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 5);
