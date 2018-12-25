@@ -15,7 +15,6 @@ function getLogger(module) {
 
   return winston.createLogger({
     format: combine(
-      colorize(),
       label({ label: pathShort }),
       timestamp(),
       json(),
@@ -24,12 +23,16 @@ function getLogger(module) {
     transports: [
       new winston.transports.Console({
         level: isDev ? 'debug' : 'info',
+        format: combine(
+          colorize(),
+          myFormat
+        )
       }),
       new winston.transports.File({
         filename: pathToFile,
         level: 'silly',
         timestamp: true
-      }),
+      })
     ]
   })
 

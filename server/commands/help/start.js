@@ -21,13 +21,11 @@ const startText = `
 module.exports = async (bot, msg) => {
   const chatId = getId(msg);
 
-  if (!config.get('dbConnected')) return messageWithRemove(bot, chatId, 'База данных не подключена, попробуйте позже', 3);
+  bot.sendMessage(chatId, startText);
 
-  schedule.scheduleJob({ date: 11 }, async () => {
+  return schedule.scheduleJob({ date: 11 }, async () => {
     const str = await getDebts();
 
     bot.sendMessage(chatId, str);
   });
-
-  return bot.sendMessage(chatId, startText);
 };
