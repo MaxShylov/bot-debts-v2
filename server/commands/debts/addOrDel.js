@@ -83,7 +83,7 @@ module.exports = async (bot, msg, type) => {
     };
 
     successText += `Так как у @${to} есть долг @${from} в размере ${dbt} то:\n` +
-      `@${to} отдал @${from} ${Math.abs(dbt)}грн.\n`;
+      `@${to} отдал @${from} ${Math.abs(fromSum)}грн.\n`;
 
     clearObj(newToDebt.debts);
 
