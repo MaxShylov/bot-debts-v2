@@ -7,6 +7,7 @@ const { getId, getDebt, messageWithRemove, clearObj } = require('../../helpers/c
 const config = require('../../config');
 const saveLog = require('../logs/saveLog');
 
+const USER_I = ['@i', '@me', '@я', '@мне', '@мені', '@і', '@!'];
 
 const checkErrors = (from, to, sum) => {
   let error = null;
@@ -20,11 +21,11 @@ const checkErrors = (from, to, sum) => {
   return error
 };
 
+
 module.exports = async (bot, msg, type) => {
   const
     chatId = getId(msg),
-    userI = ['@i', '@me', '@я', '@мне', '@мені', '@і', '@!'],
-    fixUser = (login) => userI.includes(login.toLowerCase()) ? '@' + msg.from.username : login,
+    fixUser = (login) => USER_I.includes(login.toLowerCase()) ? '@' + msg.from.username : login,
     m = compact(msg.text.split(' ')),
     isAdd = type === 'add',
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 5);
