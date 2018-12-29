@@ -11,7 +11,7 @@ const delAll = require('./debts/delAll');
 
 const getLogs = require('./logs/getLogs');
 
-const saveLog = require('./logs/saveLog');
+const sendMessageToAll = require('./help/sendMessageToAll');
 
 
 const DEV_CHAT_ID = 276399001;
@@ -33,9 +33,9 @@ module.exports = (bot) => {
       if (msg.text.includes('/del ')) return await addOrDel(bot, msg, 'del');
       if (msg.text.includes('/del_all')) return await delAll(bot, msg);
 
-      if (msg.text.includes('/get_logs')) return await getLogs(bot, msg)
+      if (msg.text.includes('/get_logs')) return await getLogs(bot, msg);
 
-      if (msg.text.includes('/save_log')) return await saveLog('', 213)
+      if (msg.text.includes('/channel')) return await sendMessageToAll(bot, msg);
     }
 
     return bot
