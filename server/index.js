@@ -16,7 +16,8 @@ const inDevCommands = require('./commands/inDev.commands');
 
 const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
-app.get('/', (req, res) => res.send('This is telegram bot: @BT-debts'));
+const wwwPath = path.join(__dirname, 'www');
+app.get('/', express.static(wwwPath));
 
 app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
 

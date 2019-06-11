@@ -14,7 +14,7 @@ const getLogs = require('./logs/getLogs');
 const sendMessageToAll = require('./help/sendMessageToAll');
 
 
-const DEV_CHAT_ID = 276399001;
+const DEV_CHAT_ID = -216677753;
 
 
 module.exports = (bot) => {

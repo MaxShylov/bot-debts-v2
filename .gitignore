@@ -9,3 +9,5 @@ yarn.lock
 /server/oldCommand
 
 *.log
+*.pid
+/process.yml
