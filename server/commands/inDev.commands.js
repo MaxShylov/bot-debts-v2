@@ -14,13 +14,15 @@ const getLogs = require('./logs/getLogs');
 const sendMessageToAll = require('./help/sendMessageToAll');
 
 
-const DEV_CHAT_ID = -216677753;
+const DEV_CHAT_ID = -349479874;
 
 
 module.exports = (bot) => {
 
   bot.onText(/\/*/, async (msg) => {
     const chatId = getId(msg);
+
+    console.log('msg', msg);
 
     if (chatId === DEV_CHAT_ID) {
       if (msg.text.includes('/start')) return await start(bot, msg);
@@ -36,6 +38,8 @@ module.exports = (bot) => {
       if (msg.text.includes('/get_logs')) return await getLogs(bot, msg);
 
       if (msg.text.includes('/channel')) return await sendMessageToAll(bot, msg);
+
+      return;
     }
 
     return bot

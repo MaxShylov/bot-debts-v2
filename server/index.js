@@ -17,10 +17,9 @@ const inDevCommands = require('./commands/inDev.commands');
 const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 const wwwPath = path.join(__dirname, 'www');
+
 app.get('/', express.static(wwwPath));
-
 app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
-
 
 app.listen(config.get('PORT'), () => {
   console.log(`Example app listening on port ${config.get('PORT')}!`);

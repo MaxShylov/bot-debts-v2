@@ -16,7 +16,6 @@ function getLogger(module) {
   return winston.createLogger({
     format: combine(
       label({ label: pathShort }),
-      timestamp(),
       json(),
       myFormat
     ),

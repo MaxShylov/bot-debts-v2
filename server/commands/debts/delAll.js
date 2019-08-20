@@ -21,23 +21,45 @@ module.exports = async (bot, msg) => {
     newDebt = {
       ...debt,
       total: 0,
-      debts: {}
+      debts: {},
     };
 
   if (!debt) return message(`Пользователь ${login} не найден`);
   if (isEmpty(debt.debts)) return message(`У пользователя и так нет долгов`);
 
-  let successText = '';
+  const text = `${msg.from.first_name}, ты уверен?`;
+  const options = {
+    reply_markup: JSON.stringify({
+      resize_keyboard: true,
+      one_time_keyboard: true,
+      keyboard: [
+        ['Нет', 'Нет', 'Да', 'Нет', 'Нет', 'Нет', 'Нет'],
+      ],
+      parse_mode: 'HTML',
+    }),
+  };
 
-  for (let i = 0; i < keys(debt.debts).length; i++) {
-    const name = keys(debt.debts)[i];
-    successText += `@${login} отдал @${name } ${Math.abs(debt.debts[name])}грн.\n`;
-  }
+  bot.sendMessage(chatId, text, options).then(ans => {
+    bot.once('message', async (msg) => {
+      if(msg.text === 'Да') {
+        let successText = '';
 
-  const status = await updateDebts({ bot, chatId, query, newDebt });
+        for (let i = 0; i < keys(debt.debts).length; i++) {
+          const name = keys(debt.debts)[i];
+          successText += `@${login} отдал @${name} ${Math.abs(debt.debts[name])}грн.\n`;
+        }
 
-  if (status) {
-    saveLog(chatId, successText);
-    message(successText, 100)
-  }
+        const status = await updateDebts({ bot, chatId, query, newDebt });
+
+        if (status) {
+          saveLog(chatId, successText);
+          message(successText, 100)
+        }
+      } else {
+        message('Так чё ты левые комманды клацаешь?', 5)
+      }
+    });
+  });
 };
+
+
