@@ -2,7 +2,7 @@ const keys = require('lodash/keys');
 const isEmpty = require('lodash/isEmpty');
 
 const updateDebts = require('./updateDebts');
-const { getId, getDebt, messageWithRemove } = require('../../helpers/common');
+const { getId, getDebt, messageWithRemove, editMessageTextWithRemove } = require('../../helpers/common');
 const config = require('../../config');
 const saveLog = require('../logs/saveLog');
 
@@ -10,7 +10,8 @@ const saveLog = require('../logs/saveLog');
 module.exports = async (bot, msg) => {
   const
     chatId = getId(msg),
-    message = (text, t) => messageWithRemove(bot, chatId, text, t || 3);
+    message = (text, t) => messageWithRemove(bot, chatId, text, t || 3),
+    editMessage = (text, options, t) => editMessageTextWithRemove(bot, chatId, text, options, t || 5);
 
   if (!config.get('dbConnected')) return message('База данных не подключена, попробуйте позже');
 
@@ -27,39 +28,49 @@ module.exports = async (bot, msg) => {
   if (!debt) return message(`Пользователь ${login} не найден`);
   if (isEmpty(debt.debts)) return message(`У пользователя и так нет долгов`);
 
-  const text = `${msg.from.first_name}, ты уверен?`;
+  const text = `${msg.from.first_name}, ты уверен, что всё отдал?`;
   const options = {
     reply_markup: JSON.stringify({
       resize_keyboard: true,
-      one_time_keyboard: true,
-      keyboard: [
-        ['Нет', 'Нет', 'Да', 'Нет', 'Нет', 'Нет', 'Нет'],
+      inline_keyboard: [
+        [
+          { text: 'Нет', callback_data: 'no' },
+          { text: 'Да', callback_data: 'yes' },
+          { text: 'Нет', callback_data: 'no' },
+          { text: 'Нет', callback_data: 'no' },
+        ],
       ],
-      parse_mode: 'HTML',
     }),
   };
 
-  bot.sendMessage(chatId, text, options).then(ans => {
-    bot.once('message', async (msg) => {
-      if(msg.text === 'Да') {
-        let successText = '';
+  bot.sendMessage(chatId, text, options);
 
-        for (let i = 0; i < keys(debt.debts).length; i++) {
-          const name = keys(debt.debts)[i];
-          successText += `@${login} отдал @${name} ${Math.abs(debt.debts[name])}грн.\n`;
-        }
+  bot.on('callback_query', async callbackQuery => {
 
-        const status = await updateDebts({ bot, chatId, query, newDebt });
+    const action = callbackQuery.data;
+    const msg = callbackQuery.message;
+    const opts = {
+      chat_id: msg.chat.id,
+      message_id: msg.message_id,
+    };
 
-        if (status) {
-          saveLog(chatId, successText);
-          message(successText, 100)
-        }
-      } else {
-        message('Так чё ты левые комманды клацаешь?', 5)
-      }
-    });
+    if (action === 'no') {
+      return editMessage('Так чё ты тогда левые комманды клацаешь?', opts);
+    }
+
+    let successText = '';
+
+    for (let i = 0; i < keys(debt.debts).length; i++) {
+      const name = keys(debt.debts)[i];
+      successText += `@${login} отдал @${name} ${Math.abs(debt.debts[name])}грн.\n`;
+    }
+
+    const status = await updateDebts({ bot, chatId, query, newDebt });
+
+    if (status) {
+      saveLog(chatId, successText);
+      editMessage(successText, opts, 20)
+    }
   });
+
 };
-
-

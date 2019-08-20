@@ -15,14 +15,13 @@ const sendMessageToAll = require('./help/sendMessageToAll');
 
 
 const DEV_CHAT_ID = -349479874;
+// const DEV_CHAT_ID = -1001188585085;
 
 
 module.exports = (bot) => {
 
   bot.onText(/\/*/, async (msg) => {
     const chatId = getId(msg);
-
-    console.log('msg', msg);
 
     if (chatId === DEV_CHAT_ID) {
       if (msg.text.includes('/start')) return await start(bot, msg);

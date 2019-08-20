@@ -18,12 +18,20 @@ const getDebt = async (bot, chatId, query) => {
   }
 };
 
-const messageWithRemove = (bot, chatId, text, time) => {
+const messageWithRemove = (bot, chatId, text, options, time) => {
   const t = time * 1000 || 15000;
 
   bot
     .sendMessage(chatId, text, { parse_mode: 'HTML' })
-    .then((message) => setTimeout(() => bot.deleteMessage(chatId, message.message_id), t));
+    .then(message => setTimeout(() => bot.deleteMessage(chatId, message.message_id), t));
+};
+
+const editMessageTextWithRemove = (bot, chatId, text, options, time) => {
+  const t = time * 1000 || 15000;
+
+  bot
+    .editMessageText(text, { parse_mode: 'HTML', ...options })
+    .then(message => setTimeout(() => bot.deleteMessage(chatId, message.message_id), t));
 };
 
 const clearObj = (obj) => forEach(obj, (v, k) => !v && delete obj[k]);
@@ -33,5 +41,6 @@ module.exports = {
   getId,
   getDebt,
   messageWithRemove,
-  clearObj
+  editMessageTextWithRemove,
+  clearObj,
 };
