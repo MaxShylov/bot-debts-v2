@@ -7,6 +7,8 @@ const config = require('../../config');
 const saveLog = require('../logs/saveLog');
 
 
+const getRandom = () => ~~(Math.random() * 5);
+
 module.exports = async (bot, msg) => {
   const
     chatId = getId(msg),
@@ -29,17 +31,15 @@ module.exports = async (bot, msg) => {
   if (isEmpty(debt.debts)) return message(`У пользователя и так нет долгов`);
 
   const text = `${msg.from.first_name}, ты уверен, что всё отдал?`;
+  const buttons = Array(5).fill({ text: 'Нет', callback_data: 'no' });
+  const index = getRandom();
+  console.log('index', index);
+  buttons[index] = { text: 'Да', callback_data: 'yes' };
+
   const options = {
     reply_markup: JSON.stringify({
       resize_keyboard: true,
-      inline_keyboard: [
-        [
-          { text: 'Нет', callback_data: 'no' },
-          { text: 'Да', callback_data: 'yes' },
-          { text: 'Нет', callback_data: 'no' },
-          { text: 'Нет', callback_data: 'no' },
-        ],
-      ],
+      inline_keyboard: [buttons],
     }),
   };
 
