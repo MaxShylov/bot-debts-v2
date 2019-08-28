@@ -2,6 +2,7 @@ const petrovich = require('petrovich');
 const isEmpty = require('lodash/isEmpty');
 const findKey = require('lodash/findKey');
 const keys = require('lodash/keys');
+const compact = require('lodash/compact');
 
 
 const { getId, messageWithRemove, getDebt } = require('../../helpers/common');
@@ -15,6 +16,7 @@ module.exports = async (bot, msg) => {
   const
     HR = '_______',
     chatId = getId(msg),
+    sec = +compact(msg.text.split(' '))[1],
     message = (text, t) => messageWithRemove(bot, chatId, text, t || 3);
 
   if (!config.get('dbConnected')) return message('База данных не подключена, попробуйте позже');
@@ -47,5 +49,5 @@ module.exports = async (bot, msg) => {
 
   saveLog(chatId, str);
 
-  return message(str, 180);
+  return message(str, sec || 180);
 };
