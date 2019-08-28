@@ -5,7 +5,7 @@ const delAll = require('./delAll');
 
 module.exports = (bot) => {
 
-  bot.onText(/\/get_debts (.+)/, async (msg) => await getDebts(bot, msg));
+  bot.onText(/\/get_debts(.+)/, async (msg) => await getDebts(bot, msg));
 
   bot.onText(/\/add (.+)/, async (msg) => await addOrDel(bot, msg, 'add'));
   bot.onText(/\/add@bt_debts_bot (.+)/, async (msg) => await addOrDel(bot, msg, 'add'));
