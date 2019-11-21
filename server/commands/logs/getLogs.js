@@ -31,5 +31,5 @@ module.exports = async (bot, msg) => {
     )
   }
 
-  return message(answer, 10);
+  return message(answer, 120);
 };

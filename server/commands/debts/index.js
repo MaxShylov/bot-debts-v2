@@ -6,6 +6,7 @@ const delAll = require('./delAll');
 module.exports = (bot) => {
 
   bot.onText(/\/get_debts(.+)/, async (msg) => await getDebts(bot, msg));
+  bot.onText(/\/get_debts@bt_debts_bot(.+)/, async (msg) => await getDebts(bot, msg));
 
   bot.onText(/\/add (.+)/, async (msg) => await addOrDel(bot, msg, 'add'));
   bot.onText(/\/add@bt_debts_bot (.+)/, async (msg) => await addOrDel(bot, msg, 'add'));
@@ -13,6 +14,6 @@ module.exports = (bot) => {
   bot.onText(/\/del (.+)/, async (msg) => await addOrDel(bot, msg, 'del'));
   bot.onText(/\/del@bt_debts_bot (.+)/, async (msg) => await addOrDel(bot, msg, 'del'));
 
-  bot.onText(/\/del_all/, async (msg) => await delAll(bot, msg));
+  // bot.onText(/\/del_all/, async (msg) => await delAll(bot, msg));
 
 };

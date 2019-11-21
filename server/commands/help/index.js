@@ -10,5 +10,6 @@ module.exports = (bot) => {
   bot.onText(/\/help/, (msg) => help(bot, msg));
   bot.onText(/\/delete_bot/, (msg) => deleteBot(bot, msg));
   bot.onText(/\/channel/, (msg) => sendMessageToAll(bot, msg));
+  bot.onText(/\/channel@bt_debts_bot/, (msg) => sendMessageToAll(bot, msg));
 
 };
