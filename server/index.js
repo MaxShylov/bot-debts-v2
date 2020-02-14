@@ -20,7 +20,7 @@ const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
 const wwwPath = path.join(__dirname, 'www');
 
-add.use(cors());
+app.use(cors());
 app.get('/', express.static(wwwPath));
 app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
 app.get('/debts', getDebts);
