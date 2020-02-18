@@ -1,9 +1,7 @@
-const config = require('../config');
 const DebtsModel = require('../db/models/debts.model');
 
-const chatId = config.get('CHAT_ID_BT');
-
 const getDebts = async (req, res) => {
+  const { chatId } = req.query;
   const data = await DebtsModel.find({ chatId }, err => {
     if (err)
       return res.status(500).send(
