@@ -39,6 +39,10 @@ const editMessageTextWithRemove = (bot, chatId, text, options, time) => {
 
 const clearObj = (obj) => forEach(obj, (v, k) => !v && delete obj[k]);
 
+const errorMessage = (msg) => JSON.stringify({
+  status: 'error',
+  error: JSON.stringify(msg),
+});
 
 module.exports = {
   getId,
@@ -46,4 +50,5 @@ module.exports = {
   messageWithRemove,
   editMessageTextWithRemove,
   clearObj,
+  errorMessage,
 };
