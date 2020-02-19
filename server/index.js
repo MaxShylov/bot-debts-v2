@@ -14,7 +14,7 @@ const debtsCommands = require('./commands/debts');
 const helpCommands = require('./commands/help');
 const logsCommands = require('./commands/logs');
 const inDevCommands = require('./commands/inDev.commands');
-const getDebts = require('./commandsWeb/getDebts');
+const commandsWeb = require('./commandsWeb');
 
 const bot = new TelegramBot(config.get('TOKEN'), { polling: true });
 
@@ -22,8 +22,8 @@ const wwwPath = path.join(__dirname, 'www');
 
 app.use(cors());
 app.get('/', express.static(wwwPath));
-app.get('/logs', (req, res) => res.sendFile(path.join(__dirname, '../combined.log')));
-app.get('/debts', getDebts);
+app.get('/logs', commandsWeb.getLogs);
+app.get('/debts', commandsWeb.getDebts);
 
 app.listen(config.get('PORT'), () => {
   console.log(`Example app listening on port ${config.get('PORT')}!`);
