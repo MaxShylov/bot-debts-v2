@@ -1,18 +1,18 @@
 const LogsModel = require('../db/models/logs.model');
+const { errorMessage } = '../helpers/common';
 
 const getDebts = async (req, res) => {
-  const { chatId, count } = req.query;
+  const { chatId, count = 5 } = req.query;
+
+  const errorResponse = msg => res.status(500).send(errorMessage(msg));
+
+  if (!chatId) return errorResponse('chatId is not exist');
+
   const logs = await LogsModel.find({ chatId }, err => {
-    if (err)
-      return res.status(500).send(
-        JSON.stringify({
-          status: 'error',
-          error: JSON.stringify(err.message),
-        }),
-      );
+    if (err) return errorResponse(err.message);
   })
     .sort('-createAt')
-    .limit(count || 5)
+    .limit(count)
     .lean()
     .exec();
 
