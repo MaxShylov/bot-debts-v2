@@ -1,5 +1,5 @@
 const DebtsModel = require('../db/models/debts.model');
-const { errorMessage } = '../helpers/common';
+const { errorMessage } = require('../helpers/common');
 
 const getDebts = async (req, res) => {
   const { chatId } = req.query;

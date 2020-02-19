@@ -1,5 +1,5 @@
 const LogsModel = require('../db/models/logs.model');
-const { errorMessage } = '../helpers/common';
+const { errorMessage } = require('../helpers/common');
 
 const getDebts = async (req, res) => {
   const { chatId, count = 5 } = req.query;
