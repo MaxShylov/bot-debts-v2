@@ -1,7 +1,7 @@
 const LogsModel = require('../db/models/logs.model');
 const { errorMessage } = require('../helpers/common');
 
-const getDebts = async (req, res) => {
+const getLogs = async (req, res) => {
   const { chatId, count = 5 } = req.query;
 
   const errorResponse = msg => res.status(500).send(errorMessage(msg));
@@ -19,4 +19,4 @@ const getDebts = async (req, res) => {
   return res.send(JSON.stringify({ status: 'success', data: logs }));
 };
 
-module.exports = getDebts;
+module.exports = getLogs;
