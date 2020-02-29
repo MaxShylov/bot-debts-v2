@@ -1,30 +1,42 @@
 {
   "name": "debts",
   "version": "2.0.0",
-  "main": "server/index.js",
+  "main": "server.js",
   "author": "Max Shylov",
   "license": "MIT",
+  "_moduleAliases": {
+    "@db": "db",
+    "@commands": "./src/commands",
+    "@controllers": "./src/controllers",
+    "@contstants": "./src/contstants",
+    "@helpers": "./src/helpers",
+    "@middleware": "./src/middleware",
+    "@utils": "./src/utils",
+    "@workers": "./src/workers"
+  },
   "dependencies": {
+    "body-parser": "^1.19.0",
     "cors": "^2.8.5",
-    "express": "^4.16.3",
-    "lodash": "^4.17.10",
-    "mongoose": "^5.4.0",
-    "nconf": "^0.10.0",
-    "node-schedule": "^1.3.0",
-    "node-telegram-bot-api": "^0.30.0",
+    "express": "^4.17.1",
+    "lodash": "^4.17.15",
+    "module-alias": "^2.2.2",
+    "moment": "^2.24.0",
+    "mongoose": "^5.9.2",
+    "node-telegram-bot-api": "^0.40.0",
     "petrovich": "^0.2.1",
-    "pm2": "^4.2.3",
-    "winston": "^3.1.0"
+    "pm2": "^4.2.3"
   },
   "scripts": {
     "start": "pm2 start process.yml",
     "stop": "pm2 stop process.yml",
     "restart": "pm2 restart process.yml",
     "logs": "pm2 logs --out",
-    "errors": "pm2 logs --err"
+    "errors": "pm2 logs --err",
+    "eslint": "eslint --fix ."
   },
   "devDependencies": {
-    "node-env-run": "^3.0.2",
-    "prettier": "^1.19.1"
+    "babel-eslint": "^10.1.0",
+    "prettier": "^1.19.1",
+    "eslint": "^6.8.0"
   }
 }

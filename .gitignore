@@ -6,8 +6,9 @@
 package-lock.json
 yarn.lock
 /node_modules
-/server/oldCommand
+/old_server/oldCommand
 
 *.log
 *.pid
 /process.yml
+/system.js
