@@ -14,6 +14,30 @@ const onText = (regexp, callback) => bot.onText(regexp, callback);
 // eslint-disable-next-line camelcase
 const optionsBot = { parse_mode: 'HTML' };
 
+const commands = require('@utils/commands');
+const queries = require('@utils/queries');
+const response = require('../middleware/response');
+const logsController = require('@controllers/logs');
+// const usersCommands = require('./src/commands/users');
+// const debtsCommands = require('./src/commands/debts');
+// const debtsHistoryCommands = require('./src/commands/debtsHistory');
+
+const { amount, time } = queries;
+
+const start = () => {
+  bot.onText(
+    commands.getLogs,
+    response(logsController.getAll, [amount, time]),
+  );
+
+  bot.on('message', (msg) => {
+    const chatId = msg.chat.id;
+    console.log(1);
+    // send a message to the chat acknowledging receipt of their message
+    bot.sendMessage(chatId, 'Received your message');
+  });
+};
+
 const sendResponse = (globalData, response, time) => {
   time = isNull(time) ? 5 : time;
   const { chatId, command } = globalData;
@@ -70,6 +94,7 @@ const sendErrorServer = globalData => {
 };
 
 module.exports = {
+  start,
   onText,
   sendResponse,
   sendErrorField,

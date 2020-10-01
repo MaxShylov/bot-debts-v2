@@ -9,11 +9,14 @@ const logsCommands = require('./src/commands/logs');
 const usersCommands = require('./src/commands/users');
 const debtsCommands = require('./src/commands/debts');
 const debtsHistoryCommands = require('./src/commands/debtsHistory');
+const botWorker = require('./src/workers/bot');
 
-logsCommands();
-usersCommands();
-debtsCommands();
-debtsHistoryCommands();
+botWorker.start();
+
+// logsCommands();
+// usersCommands();
+// debtsCommands();
+// debtsHistoryCommands();
 
 const server = http.createServer(app);
 
